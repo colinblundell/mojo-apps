@@ -4,7 +4,6 @@ ROOT_DIR="$(dirname $(realpath $(dirname "${BASH_SOURCE[0]}")))"
 BUILD_DIR="$ROOT_DIR/build"
 BUILDTOOLS_DIR="$ROOT_DIR/buildtools"
 THIRD_PARTY_DIR="$ROOT_DIR/third_party/"
-GTEST_DIR="$ROOT_DIR/testing/gtest"
 
 # BODY
 
@@ -28,14 +27,6 @@ chmod 700 $BUILDTOOLS_DIR/ninja
 
 # TODO(blundell): Fetch the Mojo SDK via git clone.
 $THIRD_PARTY_DIR/mojo/build/install-build-deps.sh
-
-# TODO(blundell): Get back to this when I'm building apptest.
-# Install gtest at the correct revision.
-#rm -rf $GTEST_DIR
-#mkdir -p $GTEST_DIR
-#git clone https://chromium.googlesource.com/external/googletest.git $GTEST_DIR
-#cd $GTEST_DIR
-#git checkout 4650552ff637bb44ecf7784060091cbed3252211 # from svn revision 692
 
 # Install the Mojo shell
 # TODO(blundell): Should this script be provided by the SDK?

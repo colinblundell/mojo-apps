@@ -23,6 +23,7 @@ shared_library("client") {
   ]
 
   sources = [ "echo_client.cc" ]
+  include_dirs = [ "../third_party" ]
 }
 
 shared_library("service") {
@@ -37,6 +38,7 @@ shared_library("service") {
   ]
 
   sources = [ "echo_service.cc" ]
+  include_dirs = [ "../third_party" ]
 }
 
 mojom("bindings") {
