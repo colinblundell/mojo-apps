@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#include "examples/echo/echo_service.mojom.h"
+#include "echo/echo_service.mojom.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
