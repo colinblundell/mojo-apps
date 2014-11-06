@@ -7,6 +7,21 @@ THIRD_PARTY_DIR="$ROOT_DIR/third_party/"
 
 # BODY
 
+# Install the Mojo SDK and shell.
+
+# TODO(blundell): Fetch the Mojo SDK via git clone.
+cd $THIRD_PARTY_DIR
+rm -rf mojo
+git clone https://github.com/colinblundell/mojo-sdk.git mojo
+$THIRD_PARTY_DIR/mojo/build/install-build-deps.sh
+
+# Install the Mojo shell
+# TODO(blundell): Should this script be provided by the SDK?
+cd $ROOT_DIR
+$BUILD_DIR/download_mojo_shell.py
+
+# Install things for building with GN and Ninja.
+
 # Install gsutil.
 cd $THIRD_PARTY_DIR
 curl --remote-name https://storage.googleapis.com/pub/gsutil.tar.gz
@@ -25,17 +40,9 @@ git clone https://github.com/martine/ninja.git -b v1.5.1
 cp ./ninja/ninja $BUILDTOOLS_DIR
 chmod 700 $BUILDTOOLS_DIR/ninja
 
-# TODO(blundell): Fetch the Mojo SDK via git clone.
-$THIRD_PARTY_DIR/mojo/build/install-build-deps.sh
-
 # Copy in the secondary build dir of the Mojo SDK at the right location.
 cd $BUILD_DIR
 rm -rf secondary
 mkdir -p secondary/third_party/mojo
 cd secondary/third_party/mojo
 cp -r $THIRD_PARTY_DIR/mojo/build/secondary/* .
-
-# Install the Mojo shell
-# TODO(blundell): Should this script be provided by the SDK?
-cd $ROOT_DIR
-$BUILD_DIR/download_mojo_shell.py
