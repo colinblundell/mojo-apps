@@ -4,16 +4,21 @@ ROOT_DIR="$(dirname $(realpath $(dirname "${BASH_SOURCE[0]}")))"
 BUILD_DIR="$ROOT_DIR/build"
 BUILDTOOLS_DIR="$ROOT_DIR/buildtools"
 THIRD_PARTY_DIR="$ROOT_DIR/third_party/"
-mkdir -p $THIRD_PARTY_DIR
+
+# The relative path from $ROOT_DIR to the directory that will hold
+# mojo/.
+MOJO_SDK_ROOT="third_party/"
+MOJO_SDK_ROOT_DIR=$ROOT_DIR/$MOJO_SDK_ROOT
 
 # BODY
 
 # Install the Mojo SDK and shell.
 
-cd $THIRD_PARTY_DIR
-rm -rf mojo
+rm -rf $MOJO_SDK_ROOT_DIR
+mkdir -p $MOJO_SDK_ROOT_DIR
+cd $MOJO_SDK_ROOT_DIR
 git clone https://github.com/colinblundell/mojo-sdk.git mojo
-$THIRD_PARTY_DIR/mojo/build/install-build-deps.sh
+$MOJO_SDK_ROOT_DIR/mojo/build/install-build-deps.sh
 
 # Install gsutil (required by download_mojo_shell.py).
 cd $THIRD_PARTY_DIR
@@ -42,6 +47,6 @@ chmod 700 $BUILDTOOLS_DIR/ninja
 # Copy in the secondary build dir of the Mojo SDK at the right location.
 cd $BUILD_DIR
 rm -rf secondary
-mkdir -p secondary/third_party/mojo
-cd secondary/third_party/mojo
-cp -r $THIRD_PARTY_DIR/mojo/build/secondary/* .
+mkdir -p secondary/$MOJO_SDK_ROOT/mojo
+cd secondary/$MOJO_SDK_ROOT/mojo
+cp -r $MOJO_SDK_ROOT_DIR/mojo/build/secondary/* .
