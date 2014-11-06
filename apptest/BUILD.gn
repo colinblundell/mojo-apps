@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/mojo/public/tools/bindings/mojom.gni")
 import("//build/config/mojo.gni")
+import(mojo_root + "mojo/public/tools/bindings/mojom.gni")
 
 group("apptest") {
   testonly = true
@@ -26,9 +26,9 @@ shared_library("service") {
 
   deps = [
     ":bindings",
-    "//third_party/mojo/public/c/system:for_shared_library",
-    "//third_party/mojo/public/cpp/application:standalone",
-    "//third_party/mojo/public/cpp/utility"
+    mojo_root + "mojo/public/c/system:for_shared_library",
+    mojo_root + "mojo/public/cpp/application:standalone",
+    mojo_root + "mojo/public/cpp/utility"
   ]
 }
 
@@ -47,9 +47,9 @@ shared_library("apptests") {
 
    deps = [
     ":bindings",
-    "//third_party/mojo/public/c/system:for_shared_library",
-    "//third_party/mojo/public/cpp/application:standalone",
-    "//third_party/mojo/public/cpp/application:test_support_standalone",
+    mojo_root + "mojo/public/c/system:for_shared_library",
+    mojo_root + "mojo/public/cpp/application:standalone",
+    mojo_root + "mojo/public/cpp/application:test_support_standalone",
    ]
 
    datadeps = [ ":service", ]

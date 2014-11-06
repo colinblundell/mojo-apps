@@ -3,11 +3,14 @@
 ROOT_DIR="$(dirname $(realpath $(dirname "${BASH_SOURCE[0]}")))"
 BUILD_DIR="$ROOT_DIR/build"
 BUILDTOOLS_DIR="$ROOT_DIR/buildtools"
+mkdir -p $BUILDTOOLS_DIR
 THIRD_PARTY_DIR="$ROOT_DIR/third_party/"
+mkdir -p $THIRD_PARTY_DIR
 
-# The relative path from $ROOT_DIR to the directory that will hold
-# mojo/.
-MOJO_SDK_ROOT="third_party/"
+# Extract the Mojo SDK root from //build/config/mojo.gni.
+MOJO_SDK_ROOT=`\grep "mojo_root = " build/config/mojo.gni | cut -d"=" -f2 | tr -d '" '`
+# Strip the "//" from the beginning.
+MOJO_SDK_ROOT=${MOJO_SDK_ROOT:2}
 MOJO_SDK_ROOT_DIR=$ROOT_DIR/$MOJO_SDK_ROOT
 
 # BODY
