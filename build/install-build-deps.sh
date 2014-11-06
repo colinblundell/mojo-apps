@@ -28,6 +28,14 @@ chmod 700 $BUILDTOOLS_DIR/ninja
 # TODO(blundell): Fetch the Mojo SDK via git clone.
 $THIRD_PARTY_DIR/mojo/build/install-build-deps.sh
 
+# Copy in the secondary build dir of the Mojo SDK at the right location.
+cd $BUILD_DIR
+rm -rf secondary
+mkdir -p secondary/third_party/mojo
+cd secondary/third_party/mojo
+cp -r $THIRD_PARTY_DIR/mojo/build/secondary/* .
+
 # Install the Mojo shell
 # TODO(blundell): Should this script be provided by the SDK?
+cd $ROOT_DIR
 $BUILD_DIR/download_mojo_shell.py
