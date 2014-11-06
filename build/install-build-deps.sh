@@ -12,16 +12,17 @@ MOJO_SDK_ROOT=`\grep "mojo_root = " build/config/mojo.gni | cut -d"=" -f2 | tr -
 # Strip the "//" from the beginning.
 MOJO_SDK_ROOT=${MOJO_SDK_ROOT:2}
 MOJO_SDK_ROOT_DIR=$ROOT_DIR/$MOJO_SDK_ROOT
+MOJO_SDK_DIR=$MOJO_SDK_ROOT_DIR/mojo
 
 # BODY
 
 # Install the Mojo SDK and shell.
 
-rm -rf $MOJO_SDK_ROOT_DIR
-mkdir -p $MOJO_SDK_ROOT_DIR
+rm -rf $MOJO_SDK_DIR
+mkdir -p $MOJO_SDK_DIR
 cd $MOJO_SDK_ROOT_DIR
 git clone https://github.com/colinblundell/mojo-sdk.git mojo
-$MOJO_SDK_ROOT_DIR/mojo/build/install-build-deps.sh
+$MOJO_SDK_DIR/build/install-build-deps.sh
 
 # Install gsutil (required by download_mojo_shell.py).
 cd $THIRD_PARTY_DIR
@@ -52,4 +53,4 @@ cd $BUILD_DIR
 rm -rf secondary
 mkdir -p secondary/$MOJO_SDK_ROOT/mojo
 cd secondary/$MOJO_SDK_ROOT/mojo
-cp -r $MOJO_SDK_ROOT_DIR/mojo/build/secondary/* .
+cp -r $MOJO_SDK_DIR/build/secondary/* .
