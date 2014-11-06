@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/mojo/public/tools/bindings/mojom.gni")
+import("//build/config/mojo.gni")
 
 group("echo") {
   deps = [
@@ -23,7 +24,6 @@ shared_library("client") {
   ]
 
   sources = [ "echo_client.cc" ]
-  include_dirs = [ "../third_party" ]
 }
 
 shared_library("service") {
@@ -38,7 +38,6 @@ shared_library("service") {
   ]
 
   sources = [ "echo_service.cc" ]
-  include_dirs = [ "../third_party" ]
 }
 
 mojom("bindings") {

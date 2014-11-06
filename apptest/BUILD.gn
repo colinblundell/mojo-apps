@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/mojo/public/tools/bindings/mojom.gni")
+import("//build/config/mojo.gni")
 
 group("apptest") {
   testonly = true
@@ -29,7 +30,6 @@ shared_library("service") {
     "//third_party/mojo/public/cpp/application:standalone",
     "//third_party/mojo/public/cpp/utility"
   ]
-  include_dirs = [ "../third_party" ]
 }
 
 shared_library("apptests") {
@@ -53,7 +53,6 @@ shared_library("apptests") {
    ]
 
    datadeps = [ ":service", ]
-   include_dirs = [ "../third_party" ]
 }
 
 mojom("bindings") {
