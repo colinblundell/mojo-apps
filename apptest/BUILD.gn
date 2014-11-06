@@ -29,7 +29,7 @@ shared_library("service") {
     "//third_party/mojo/public/cpp/application:standalone",
     "//third_party/mojo/public/cpp/utility"
   ]
-  include_dirs = [ "third_party" ]
+  include_dirs = [ "../third_party" ]
 }
 
 shared_library("apptests") {
@@ -53,7 +53,7 @@ shared_library("apptests") {
    ]
 
    datadeps = [ ":service", ]
-   include_dirs = [ "third_party" ]
+   include_dirs = [ "../third_party" ]
 }
 
 mojom("bindings") {
