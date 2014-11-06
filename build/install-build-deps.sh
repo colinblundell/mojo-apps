@@ -23,6 +23,7 @@ mkdir -p $MOJO_SDK_DIR
 cd $MOJO_SDK_ROOT_DIR
 git clone https://github.com/colinblundell/mojo-sdk.git mojo
 $MOJO_SDK_DIR/build/install-build-deps.sh
+cp $MOJO_SDK_DIR/VERSION $BUILD_DIR/MOJO_SDK_VERSION
 
 # Install gsutil (required by download_mojo_shell.py).
 cd $THIRD_PARTY_DIR
