@@ -1,1 +1,2 @@
 mojo_root = "//third_party/"
+mojo_third_party_root = mojo_root + "/mojo/"
