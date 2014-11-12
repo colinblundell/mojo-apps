@@ -77,14 +77,17 @@ mojo_gni_file = os.path.join(root_path, "build/config/mojo.gni")
 execfile(mojo_gni_file)
 
 assert(mojo_root.startswith("//"))
-mojo_sdk_dir = os.path.join(root_path, mojo_root[2:], "mojo")
+mojo_root = mojo_root[2:]
+mojo_sdk_dir = os.path.join(root_path, mojo_root, "mojo")
 
 mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
 
 # Rev the SDK and shell.
+build_path = os.path.join(root_path, "build")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
-system(os.path.join(root_path, "build/download_mojo_shell.py"))
+system([os.path.join(build_path, "download_mojo_shell.py")])
+system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
 
 # Rev client apps and update their buildfiles.
 rev(mojo_repo_dir, root_path, client_dirs_to_clone)

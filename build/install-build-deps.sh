@@ -48,9 +48,6 @@ git clone https://github.com/martine/ninja.git -b v1.5.1
 cp ./ninja/ninja $BUILDTOOLS_DIR
 chmod 700 $BUILDTOOLS_DIR/ninja
 
-# Copy in the secondary build dir of the Mojo SDK at the right location.
+# Set up the Mojo GN build.
 cd $BUILD_DIR
-rm -rf secondary
-mkdir -p secondary/$MOJO_SDK_ROOT/mojo
-cd secondary/$MOJO_SDK_ROOT/mojo
-cp -r $MOJO_SDK_DIR/build/secondary/* .
+./set_up_mojo_gn_build.sh $MOJO_SDK_ROOT
