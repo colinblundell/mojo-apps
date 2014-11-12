@@ -6,7 +6,7 @@ group("root") {
   testonly = true
   
   deps = [
-    "//apptest",
-    "//echo",
+    "//examples/apptest",
+    "//examples/echo",
   ]
 }
