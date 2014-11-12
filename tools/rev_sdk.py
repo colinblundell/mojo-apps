@@ -68,15 +68,15 @@ if len(sys.argv) != 2:
   print "usage: rev_sdk.py <mojo source dir>"
   sys.exit(1)
 
-# Evaluate mojo.gni to obtain mojo_root and mojo_third_party_root.
 current_path = os.path.dirname(os.path.realpath(__file__))
 root_path = os.path.join(current_path, "..")
+
+# Evaluate mojo.gni to obtain mojo_root.
 mojo_gni_file = os.path.join(root_path, "build/config/mojo.gni")
 execfile(mojo_gni_file)
+
 assert(mojo_root.startswith("//"))
-mojo_sdk_dir = os.path.join(mojo_root[2:], "mojo")
-assert(mojo_third_party_root.startswith("//"))
-mojo_third_party_dir = os.path.join(mojo_third_party_root[2:], "third_party")
+mojo_sdk_dir = os.path.join(root_path, mojo_root[2:], "mojo")
 
 rev(sys.argv[1], mojo_sdk_dir, sdk_dirs_to_clone)
 rev(sys.argv[1], root_path, client_dirs_to_clone)
