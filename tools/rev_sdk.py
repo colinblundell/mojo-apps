@@ -14,7 +14,7 @@ sdk_dirs_to_clone = [
   # The build dependencies of the core SDK.
   "third_party/cython",
   "third_party/khronos",
-  "build/config",
+  "mojo/build/config",
   "build/secondary/testing/gtest",
 ]
 
