@@ -88,6 +88,9 @@ chromium_repo_dir = sys.argv[2]
 build_path = os.path.join(root_path, "build")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
 system([os.path.join(build_path, "download_mojo_shell.py")])
+
+# Update the Mojo build for the new SDK.
+system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
 system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
 
 # Rev client apps and update their buildfiles.
