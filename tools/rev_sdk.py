@@ -87,5 +87,5 @@ rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
 
 # Rev client apps and update their buildfiles.
 rev(mojo_repo_dir, root_path, client_dirs_to_clone)
-system([os.path.join("chromium_repo_dir", "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
+system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
