@@ -12,6 +12,7 @@ sdk_dirs_to_clone = [
   "mojo/public",
 
   # The build dependencies of the core SDK.
+  "testing/gtest",
   "third_party/cython",
   "third_party/khronos",
   "mojo/build/config",
