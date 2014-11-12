@@ -10,4 +10,4 @@ cd $MOJO_SRC_DIR
 git checkout $VERSION
 
 cd $ROOT_DIR
-./tools/rev_sdk.py $MOJO_SRC_DIR
+./tools/rev_sdk.py $MOJO_SRC_DIR $CHROMIUM_SRC_DIR

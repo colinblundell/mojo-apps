@@ -14,6 +14,7 @@ sdk_dirs_to_clone = [
   # The build dependencies of the core SDK.
   "third_party/cython",
   "third_party/khronos",
+  "build/config",
   "build/secondary/testing/gtest",
 ]
 
@@ -62,10 +63,10 @@ def rev(source_dir, target_dir, dirs_to_clone):
   with open("MOJO_SDK_VERSION", "w") as version_file:
     version_file.write(src_commit)
   system(["git", "add", "MOJO_SDK_VERSION"])
-  #commit("Update mojo sdk to rev " + src_commit)
+  commit("Update mojo sdk to rev " + src_commit)
 
-if len(sys.argv) != 2:
-  print "usage: rev_sdk.py <mojo source dir>"
+if len(sys.argv) != 3:
+  print "usage: rev_sdk.py <mojo source dir> <chromium source dir>"
   sys.exit(1)
 
 current_path = os.path.dirname(os.path.realpath(__file__))
@@ -78,5 +79,13 @@ execfile(mojo_gni_file)
 assert(mojo_root.startswith("//"))
 mojo_sdk_dir = os.path.join(root_path, mojo_root[2:], "mojo")
 
-rev(sys.argv[1], mojo_sdk_dir, sdk_dirs_to_clone)
-rev(sys.argv[1], root_path, client_dirs_to_clone)
+mojo_repo_dir = sys.argv[1]
+chromium_repo_dir = sys.argv[2]
+
+# Rev the SDK.
+rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
+
+# Rev client apps and update their buildfiles.
+rev(mojo_repo_dir, root_path, client_dirs_to_clone)
+system([os.path.join("chromium_repo_dir", "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
+commit("Update BUILD.gn files of client apps")
