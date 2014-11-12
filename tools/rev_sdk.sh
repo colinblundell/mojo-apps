@@ -8,6 +8,8 @@ VERSION=`cat $VERSION_FILE`
 
 cd $MOJO_SRC_DIR
 git checkout $VERSION
+
+cd $ROOT_DIR
 ./tools/consumable_sdk/make_sdk_consumable.sh $MOJO_SRC_DIR $CHROMIUM_SRC_DIR
 
 cd $ROOT_DIR
