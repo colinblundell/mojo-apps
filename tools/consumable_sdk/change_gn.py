@@ -11,5 +11,5 @@
 [r'([ ]+)(sources =.*)', r'\1public_configs = [ rebase_path("mojo/build/config", ".", mojo_root) + ":mojo_sdk" ]\n\1\2', ['mojo/public*BUILD.gn']],
 # Removing the public config from BUILD.gn files that don't use it to avoid
 # gn errors.
-[r'[ ]*public_configs = \[ rebase_path\("mojo/build/config", ".", mojo_root\) \+ ":mojo_sdk" \]', '', ['*mojo/bindings/tests/BUILD.gn', "*mojo/public/interfaces/application/BUILD.gn", "*mojo/public/python/BUILD.gn"]],
+[r'[ ]*public_configs = \[ rebase_path\("mojo/build/config", ".", mojo_root\) \+ ":mojo_sdk" \]', '', ['*mojo/public/interfaces/bindings/tests/BUILD.gn', "*mojo/public/interfaces/application/BUILD.gn", "*mojo/public/python/BUILD.gn"]],
 ]
