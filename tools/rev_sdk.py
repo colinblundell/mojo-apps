@@ -42,7 +42,7 @@ def rev(source_dir, target_dir, dirs_to_clone):
 
     # Strip any "mojo/" prefixes to avoid stutter.
     if output_dir.startswith("mojo/"):
-      output_dir = output_dir[len("mojo/":)]
+      output_dir = output_dir[len("mojo/"):]
     os.chdir(target_dir)
     if os.path.exists(output_dir):
       print "removing directory %s" % output_dir
