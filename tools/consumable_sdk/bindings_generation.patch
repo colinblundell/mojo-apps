@@ -1,0 +1,79 @@
+diff --git a/mojo/public/c/gles2/BUILD.gn b/mojo/public/c/gles2/BUILD.gn
+index a7133dc..f60f4fd 100644
+--- a/mojo/public/c/gles2/BUILD.gn
++++ b/mojo/public/c/gles2/BUILD.gn
+@@ -8,14 +8,12 @@ config("gles2_config") {
+ }
+ 
+ source_set("gles2") {
+-  public_configs = [ rebase_path("mojo/build/config", ".", mojo_root) + ":mojo_sdk" ]
++  public_configs = [ ":gles2_config", rebase_path("mojo/build/config", ".", mojo_root) + ":mojo_sdk" ]
+   sources = [
+     "gles2.h",
+     "gles2_export.h",
+   ]
+ 
+-  public_configs = [ ":gles2_config" ]
+-
+   public_deps = [
+     rebase_path("mojo/public/c/environment", ".", mojo_root),
+     rebase_path("mojo/public/c/system", ".", mojo_root),
+diff --git a/mojo/public/tools/bindings/mojom.gni b/mojo/public/tools/bindings/mojom.gni
+index e2efc76..7ec3c9a 100644
+--- a/mojo/public/tools/bindings/mojom.gni
++++ b/mojo/public/tools/bindings/mojom.gni
+@@ -120,8 +120,9 @@ template("mojom") {
+               generator_python_outputs
+     args = [
+       "{{source}}",
+-      "--use_chromium_bundled_pylibs",
++      "--bundled_pylibs_root", rebase_path(mojo_third_party_root + "third_party/", root_build_dir),
+       "-d", rebase_path("//", root_build_dir),
++      "-I", rebase_path(mojo_root, root_build_dir),
+       "-I", rebase_path("//", root_build_dir),
+       "-o", rebase_path(root_gen_dir),
+     ]
+diff --git a/mojo/public/tools/bindings/mojom_bindings_generator.py b/mojo/public/tools/bindings/mojom_bindings_generator.py
+index cccc42a..a6f282a 100755
+--- a/mojo/public/tools/bindings/mojom_bindings_generator.py
++++ b/mojo/public/tools/bindings/mojom_bindings_generator.py
+@@ -15,20 +15,15 @@ import sys
+ # Disable lint check for finding modules:
+ # pylint: disable=F0401
+ 
+-def _GetDirAbove(dirname):
+-  """Returns the directory "above" this file containing |dirname| (which must
+-  also be "above" this file)."""
+-  path = os.path.abspath(__file__)
+-  while True:
+-    path, tail = os.path.split(path)
+-    assert tail
+-    if tail == dirname:
+-      return path
+-
+ # Manually check for the command-line flag. (This isn't quite right, since it
+ # ignores, e.g., "--", but it's close enough.)
+-if "--use_chromium_bundled_pylibs" in sys.argv[1:]:
+-  sys.path.insert(0, os.path.join(_GetDirAbove("mojo"), "third_party"))
++try:
++  index = sys.argv.index("--bundled_pylibs_root") + 1
++  bundled_pylibs_root = sys.argv[index]
++  sys.path.insert(0, bundled_pylibs_root)
++except ValueError:
++  pass
++
+ 
+ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "pylib"))
+@@ -177,8 +172,9 @@ def main():
+   parser.add_argument("-I", dest="import_directories", action="append",
+                       metavar="directory", default=[],
+                       help="add a directory to be searched for import files")
+-  parser.add_argument("--use_chromium_bundled_pylibs", action="store_true",
+-                      help="use Python modules bundled in the Chromium source")
++  parser.add_argument("--bundled_pylibs_root", dest=bundled_pylibs_root,
++                      default=None,
++                      help="Directory storing bundled Python modules")
+   (args, remaining_args) = parser.parse_known_args()
+ 
+   generator_modules = LoadGenerators(args.generators_string)

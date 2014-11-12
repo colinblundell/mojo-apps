@@ -1,0 +1,18 @@
+diff --git a/build/config/mojo.gni b/build/config/mojo.gni
+new file mode 100644
+index 0000000..23e7e3c
+--- /dev/null
++++ b/build/config/mojo.gni
+@@ -0,0 +1,2 @@
++mojo_root = "//"
++mojo_third_party_root = mojo_root
+diff --git a/mojo/build/config/BUILD.gn b/mojo/build/config/BUILD.gn
+new file mode 100644
+index 0000000..e961ec5
+--- /dev/null
++++ b/mojo/build/config/BUILD.gn
+@@ -0,0 +1,4 @@
++import("//build/config/mojo.gni")
++config("mojo_sdk") {
++  include_dirs = [ mojo_root, root_gen_dir + mojo_root, mojo_third_party_root ]
++}
