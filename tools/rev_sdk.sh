@@ -1,7 +1,7 @@
 #!/bin/bash
 ROOT_DIR="$(dirname $(realpath $(dirname "${BASH_SOURCE[0]}")))"
-CHROMIUM_SRC_DIR=$1
-MOJO_SRC_DIR=$2
+MOJO_SRC_DIR=$1
+CHROMIUM_SRC_DIR=$2
 
 VERSION_FILE=$CHROMIUM_SRC_DIR/mojo/public/VERSION
 VERSION=`cat $VERSION_FILE`
