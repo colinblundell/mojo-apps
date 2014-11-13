@@ -1,0 +1,191 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/ui.gni")
+
+gypi_values = exec_script(
+    "//build/gypi_to_gn.py",
+    [ rebase_path("views.gyp") ],
+    "scope",
+    [ "views.gyp" ])
+
+component("views") {
+  sources = gypi_values.views_sources
+
+  defines = [ "VIEWS_IMPLEMENTATION" ]
+
+  deps = [
+    "//base:i18n",
+    "//base/third_party/dynamic_annotations",
+    "//skia",
+    "//third_party/icu",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/native_theme",
+    "//ui/resources",
+    "//ui/strings",
+    "//ui/wm",
+    "//url",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/events",
+    "//ui/events:events_base",
+    "//ui/events/platform",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+
+  if (use_x11 && !is_chromeos) {
+    deps += [ "//ui/display/util" ]
+  }
+
+  if (is_win) {
+    sources += gypi_values.views_win_sources
+    cflags = [ "/wd4267" ]  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    libs = [ "imm32.lib", "oleacc.lib" ]
+    ldflags = [ "/DELAYLOAD:user32.dll" ]
+    deps += [
+      "//third_party/iaccessible2",
+      "//third_party/wtl",
+    ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+  if (use_x11) {
+    configs += [
+      "//build/config/linux:x11",
+      "//build/config/linux:xrandr",
+    ]
+    deps += [
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+    ]
+  }
+
+  if (use_aura) {
+    sources += gypi_values.views_aura_sources
+  }
+}
+
+if (false) {
+
+static_library("test_support") {
+  testonly = true
+  sources = gypi_values.views_test_support_sources
+
+  public_deps = [
+    ":views",
+  ]
+  deps = [
+    "//base",
+    "//skia",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/compositor:test_support",
+    "//ui/events",
+    "//ui/events:events_base",
+    "//ui/events:test_support",
+    "//ui/events/platform",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/wm",
+  ]
+
+  if (use_aura) {
+    sources += gypi_values.views_test_support_aura_sources
+    deps += [ "//ui/aura:test_support" ]
+  }
+  if (use_x11) {
+    deps += [ "//ui/gfx/x" ]
+  }
+}
+
+test("views_unittests") {
+  sources = gypi_values.views_unittests_sources
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base:i18n",
+    "//base/allocator",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//third_party/icu",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/compositor:test_support",
+    "//ui/events:test_support",
+    "//ui/events:events_base",
+    "//ui/events/platform",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+    "//ui/resources",
+    "//ui/strings",
+    "//ui/wm",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources -= [
+      "ime/input_method_bridge_unittest.cc",
+    ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//third_party/iaccessible2",
+      "//third_party/wtl",
+    ]
+    libs = [
+      "imm32.lib",
+      "oleacc.lib",
+      "comctl32.lib",
+    ]
+    # TOOD(GYP)
+    #'msvs_settings': {
+    #  'VCManifestTool': {
+    #    'AdditionalManifestFiles': [
+    #      '$(ProjectDir)\\test\\views_unittest.manifest',
+    #    ],
+    #  },
+    #},
+  }
+
+  if (use_x11) {
+    configs += [
+      "//build/config/linux:x11",
+      "//build/config/linux:xext",
+    ]
+    deps += [
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+    ]
+  }
+
+  if (use_aura) {
+    sources += gypi_values.views_unittests_aura_sources
+    deps += [ "//ui/aura:test_support" ]
+  }
+  if (use_x11) {
+    deps += [
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+    ]
+  }
+}
+
+}  # if (false)

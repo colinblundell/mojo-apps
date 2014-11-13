@@ -31,8 +31,16 @@ client_dirs_to_clone = [
   # Dependencies of client apps.
   "base",
   "build",
+  "crypto",
+  "gin",
   "gpu",
+  "net",
+  "sdch",
+  "skia",
   "third_party",
+  "ui",
+  "url",
+  "v8",
 
   # Support for a gn/ninja client build.
   "tools",
