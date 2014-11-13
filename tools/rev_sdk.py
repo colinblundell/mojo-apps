@@ -103,9 +103,9 @@ system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
 system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
 
 # Rev client apps and update their buildfiles.
-system(["cp", "build/config/mojo.gni", root_path])
+system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
 rev(mojo_repo_dir, root_path, client_dirs_to_clone)
-system(["mv", os.path.join(root_path, "mojo.gni"), "build/config"])
+system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
 commit("Restore mojo.gni")
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
