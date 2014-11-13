@@ -17,13 +17,22 @@ sdk_dirs_to_clone = [
   "third_party/khronos",
   "mojo/build/config",
   "build/secondary/testing/gtest",
+
+  # Public services.
+  "mojo/services/public",
 ]
 
 client_dirs_to_clone = [
   # Client apps.
-  # TODO(blundell): Copy in stuff for build/.
   "examples/apptest",
   "examples/echo",
+  "examples/sample_app",
+
+  # Dependencies of client apps.
+  "base",
+  "build",
+  "gpu",
+  "third_party",
 
   # Support for a gn/ninja client build.
   "tools/generate_library_loader",
@@ -94,6 +103,9 @@ system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
 system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
 
 # Rev client apps and update their buildfiles.
+system(["cp", "build/config/mojo.gni", root_path])
 rev(mojo_repo_dir, root_path, client_dirs_to_clone)
+system(["mv", os.path.join(root_path, "mojo.gni"), "build/config"])
+commit("Restore mojo.gni")
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")

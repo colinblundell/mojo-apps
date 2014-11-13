@@ -46,4 +46,6 @@ Thumbs.db
 /_out
 /out
 /out_*
-/third_party
+/third_party/gsutil
+/third_party/mojo
+/third_party/ninja
