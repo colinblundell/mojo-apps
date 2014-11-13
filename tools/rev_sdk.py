@@ -100,7 +100,6 @@ system([os.path.join(build_path, "download_mojo_shell.py")])
 
 # Update the Mojo build for the new SDK.
 system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
-system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
 
 # Rev client apps and update their buildfiles.
 system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
@@ -109,3 +108,5 @@ system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "buil
 commit("Restore mojo.gni")
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
+
+system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
