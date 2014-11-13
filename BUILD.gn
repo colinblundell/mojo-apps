@@ -8,5 +8,6 @@ group("root") {
   deps = [
     "//examples/apptest",
     "//examples/echo",
+    "//examples/sample_app",
   ]
 }
