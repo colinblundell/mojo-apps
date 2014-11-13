@@ -35,7 +35,7 @@ client_dirs_to_clone = [
   "third_party",
 
   # Support for a gn/ninja client build.
-  "tools/generate_library_loader",
+  "tools",
 ]
 
 def system(command):
