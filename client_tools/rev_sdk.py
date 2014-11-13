@@ -94,9 +94,9 @@ mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
 
 # Rev the SDK and shell.
-build_path = os.path.join(root_path, "build")
+client_tools_path = os.path.join(root_path, "client_tools")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
-system([os.path.join(build_path, "download_mojo_shell.py")])
+system([os.path.join(client_tools_path, "download_mojo_shell.py")])
 
 # Update the Mojo build for the new SDK.
 system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
@@ -109,4 +109,4 @@ commit("Restore mojo.gni")
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
 
-system([os.path.join(build_path, "set_up_mojo_gn_build.sh"), mojo_root])
+system([os.path.join(client_tools_path, "set_up_mojo_gn_build.sh"), mojo_root])
