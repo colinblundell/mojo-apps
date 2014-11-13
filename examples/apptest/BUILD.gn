@@ -1,8 +1,9 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/mojo.gni")
 
-import("//mojo/public/tools/bindings/mojom.gni")
+import(rebase_path("mojo/public/tools/bindings/mojom.gni", ".", mojo_root))
 
 group("apptest") {
   testonly = true
@@ -25,9 +26,9 @@ shared_library("service") {
 
   deps = [
     ":bindings",
-    "//mojo/public/c/system:for_shared_library",
-    "//mojo/public/cpp/application:standalone",
-    "//mojo/public/cpp/utility"
+    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
+    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
+    rebase_path("mojo/public/cpp/utility", ".", mojo_root)
   ]
 }
 
@@ -46,9 +47,9 @@ shared_library("apptests") {
 
    deps = [
     ":bindings",
-    "//mojo/public/c/system:for_shared_library",
-    "//mojo/public/cpp/application:standalone",
-    "//mojo/public/cpp/application:test_support_standalone",
+    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
+    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
+    rebase_path("mojo/public/cpp/application:test_support_standalone", ".", mojo_root),
    ]
 
    datadeps = [ ":service", ]
