@@ -73,6 +73,9 @@ def rev(source_dir, target_dir, dirs_to_clone):
     # Strip any "mojo/" prefixes to avoid stutter.
     if output_dir.startswith("mojo/"):
       output_dir = output_dir[len("mojo/"):]
+    # Strip any "services/" prefixes to avoid stutter.
+    if output_dir.startswith("services/"):
+      output_dir = output_dir[len("services/"):]
     os.chdir(target_dir)
     if os.path.exists(output_dir):
       print "removing directory %s" % output_dir
@@ -100,7 +103,6 @@ def copy(source_dir, target_dir, dirs_to_copy):
     output_dir = os.path.join(target_dir, d)
     if os.path.exists(output_dir):
       print "removing directory %s" % output_dir
-      system(["git", "rm", "-rf", output_dir])
       system(["rm", "-rf", output_dir])
     system(["cp", "-r", os.path.join(source_dir, d), output_dir])
     system(["rm", "-rf", os.path.join(output_dir, ".git")])
