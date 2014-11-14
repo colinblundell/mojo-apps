@@ -17,7 +17,9 @@ sdk_dirs_to_clone = [
   "third_party/khronos",
   "mojo/build/config",
   "build/secondary/testing/gtest",
+]
 
+services_dirs_to_clone = [
   # Public services.
   "mojo/services/public",
 ]
@@ -119,6 +121,7 @@ execfile(mojo_gni_file)
 assert(mojo_root.startswith("//"))
 mojo_root = mojo_root[2:]
 mojo_sdk_dir = os.path.join(root_path, mojo_root, "mojo")
+mojo_services_dir = os.path.join(root_path, mojo_root, "services")
 
 mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
@@ -127,6 +130,9 @@ chromium_repo_dir = sys.argv[2]
 client_tools_path = os.path.join(root_path, "client_tools")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
 system([os.path.join(client_tools_path, "download_mojo_shell.py")])
+
+# Rev services.
+rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)
 
 # Update the Mojo build for the new SDK.
 system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
