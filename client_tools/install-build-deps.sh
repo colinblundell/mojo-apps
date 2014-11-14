@@ -49,6 +49,12 @@ git clone https://github.com/martine/ninja.git -b v1.5.1
 cp ./ninja/ninja $BUILDTOOLS_DIR
 chmod 700 $BUILDTOOLS_DIR/ninja
 
+# Hack to ensure that client directories that expect //testing/gtest to be
+# present will see it.
+cd $ROOT_DIR
+rm -f testing
+ln -s $MOJO_SDK_DIR/testing
+
 # Set up the Mojo GN build.
 cd $CLIENT_TOOLS_DIR
 ./set_up_mojo_gn_build.sh $MOJO_SDK_ROOT
