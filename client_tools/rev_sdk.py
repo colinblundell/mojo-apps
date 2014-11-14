@@ -46,6 +46,15 @@ client_dirs_to_clone = [
   "tools",
 ]
 
+# Directories not tracked by git that should be copied in.
+client_dirs_to_copy = [
+  "third_party/angle",
+  "third_party/boringssl/src",
+  "third_party/mesa/src",
+  "third_party/yasm/binaries",
+  "third_party/yasm/source/patched-yasm",
+]
+
 def system(command):
   return subprocess.check_output(command)
 
@@ -83,6 +92,17 @@ def rev(source_dir, target_dir, dirs_to_clone):
   system(["git", "add", "MOJO_SDK_VERSION"])
   commit("Update mojo sdk to rev " + src_commit)
 
+def copy(source_dir, target_dir, dirs_to_copy):
+  os.chdir(source_dir)
+  for d in dirs_to_copy:
+    output_dir = os.path.join(target_dir, d)
+    if os.path.exists(output_dir):
+      print "removing directory %s" % output_dir
+      system(["git", "rm", "-r", output_dir])
+    system("cp", "-r", os.path.join(source_dir, d), output_dir)
+    system("git", "add", output_dir)
+  commit("Update dirs copied in from the Mojo repo")
+
 if len(sys.argv) != 3:
   print "usage: rev_sdk.py <mojo source dir> <chromium source dir>"
   sys.exit(1)
@@ -109,11 +129,16 @@ system([os.path.join(client_tools_path, "download_mojo_shell.py")])
 # Update the Mojo build for the new SDK.
 system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
 
-# Rev client apps and update their buildfiles.
+# Rev client apps.
 system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
 rev(mojo_repo_dir, root_path, client_dirs_to_clone)
 system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
 commit("Restore mojo.gni")
+
+# Copy in dirs of client apps that aren't tracked in git.
+copy(mojo_repo_dir, root_path, client_dirs_to_copy)
+
+# Update buildfiles of client apps.
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
 
