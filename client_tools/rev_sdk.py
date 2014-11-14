@@ -98,7 +98,8 @@ def copy(source_dir, target_dir, dirs_to_copy):
     output_dir = os.path.join(target_dir, d)
     if os.path.exists(output_dir):
       print "removing directory %s" % output_dir
-      system(["git", "rm", "-r", output_dir])
+      system(["git", "rm", "-rf", output_dir])
+      system(["rm", "-rf", output_dir])
     system(["cp", "-r", os.path.join(source_dir, d), output_dir])
     system(["rm", "-rf", os.path.join(output_dir, ".git")])
     system(["git", "add", output_dir])
