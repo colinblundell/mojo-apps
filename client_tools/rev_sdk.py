@@ -51,6 +51,7 @@ client_dirs_to_copy = [
   "third_party/angle",
   "third_party/boringssl/src",
   "third_party/mesa/src",
+  "third_party/skia",
   "third_party/yasm/source/patched-yasm",
 ]
 
