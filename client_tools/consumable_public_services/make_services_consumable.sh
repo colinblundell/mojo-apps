@@ -9,4 +9,5 @@ $CHROMIUM_SRC_DIR/tools/git/mffr.py -fi $SCRIPT_DIR/change_gn.py
 git apply $SCRIPT_DIR/bindings_generation.patch
 git apply $SCRIPT_DIR/mojo_gni.patch
 git apply $SCRIPT_DIR/add_missing_dependencies.patch
+git apply $SCRIPT_DIR/presubmit_fixup.patch
 git add mojo/services/build
