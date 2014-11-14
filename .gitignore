@@ -41,7 +41,7 @@ Session.vim
 tags
 Thumbs.db
 /build/MOJO_SDK_VERSION
-/build/secondary
+/build/secondary/**/mojo
 /buildtools
 /_out
 /out
