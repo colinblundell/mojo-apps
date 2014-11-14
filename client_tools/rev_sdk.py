@@ -16,7 +16,7 @@ sdk_dirs_to_clone = [
   "third_party/cython",
   "third_party/khronos",
   "mojo/build/config",
-  "build/secondary/testing/gtest",
+  "build/secondary/testing",
 ]
 
 services_dirs_to_clone = [
