@@ -1,7 +1,6 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/mojo.gni")
 
 shared_library("sample_app") {
   sources = [
@@ -14,13 +13,13 @@ shared_library("sample_app") {
     ":spinning_cube",
     "//base",
     "//gpu/command_buffer/client:gles2_interface",
-    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
-    rebase_path("mojo/public/cpp/bindings", ".", mojo_root),
-    rebase_path("mojo/public/cpp/utility", ".", mojo_root),
-    rebase_path("mojo/public/gles2:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/services/public/interfaces/geometry", ".", mojo_root),
-    rebase_path("mojo/services/public/interfaces/native_viewport", ".", mojo_root),
+    "//mojo/public/c/system:for_shared_library",
+    "//mojo/public/cpp/application:standalone",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/utility",
+    "//mojo/public/gles2:for_shared_library",
+    "//mojo/services/public/interfaces/geometry",
+    "//mojo/services/public/interfaces/native_viewport",
   ]
 }
 
@@ -32,6 +31,6 @@ source_set("spinning_cube") {
 
   deps = [
     "//base",
-    rebase_path("mojo/public/gles2:for_shared_library", ".", mojo_root),
+    "//mojo/public/gles2:for_shared_library",
   ]
 }
