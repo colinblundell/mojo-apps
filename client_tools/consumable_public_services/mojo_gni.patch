@@ -1,0 +1,10 @@
+diff --git a/build/config/mojo.gni b/build/config/mojo.gni
+index 4807c6e..ab56db2 100644
+--- a/build/config/mojo.gni
++++ b/build/config/mojo.gni
+@@ -3,4 +3,5 @@
+ # found in the LICENSE file.
+ 
+ mojo_root = "//"
++mojo_services_root = "//mojo"
+ mojo_third_party_root = mojo_root

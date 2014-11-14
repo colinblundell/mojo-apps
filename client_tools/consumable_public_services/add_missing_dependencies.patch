@@ -1,0 +1,43 @@
+diff --git a/mojo/services/public/cpp/view_manager/BUILD.gn b/mojo/services/public/cpp/view_manager/BUILD.gn
+index 0645bf4..f9893bc 100644
+--- a/mojo/services/public/cpp/view_manager/BUILD.gn
++++ b/mojo/services/public/cpp/view_manager/BUILD.gn
+@@ -17,6 +17,7 @@ source_set("view_manager") {
+     "lib/view_observer.cc",
+     "lib/view_private.cc",
+     "lib/view_private.h",
++    "util.h",
+     "view.h",
+     "view_manager.h",
+     "view_manager_client_factory.h",
+diff --git a/mojo/services/view_manager/BUILD.gn b/mojo/services/view_manager/BUILD.gn
+index 0dc49d7..11bac2c 100644
+--- a/mojo/services/view_manager/BUILD.gn
++++ b/mojo/services/view_manager/BUILD.gn
+@@ -28,6 +28,7 @@ source_set("view_manager_lib") {
+     "default_access_policy.h",
+     "display_manager.cc",
+     "display_manager.h",
++    "ids.h",
+     "server_view.cc",
+     "server_view.h",
+     "server_view_delegate.h",
+@@ -37,6 +38,10 @@ source_set("view_manager_lib") {
+     "window_manager_access_policy.h",
+   ]
+ 
++  public_deps = [
++    "//mojo/services/public/cpp/view_manager",
++  ]
++
+   deps = [
+     "//base",
+     "//cc/surfaces",
+@@ -103,6 +108,7 @@ shared_library("view_manager_server_apptests") {
+   ]
+ 
+   deps = [
++    ":view_manager_lib",
+     "//base",
+     "//mojo/application",
+     "//mojo/application:test_support",

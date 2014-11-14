@@ -22,6 +22,7 @@ sdk_dirs_to_clone = [
 services_dirs_to_clone = [
   # Public services.
   "mojo/services/public",
+  "mojo/services/build/config",
 ]
 
 client_dirs_to_clone = [

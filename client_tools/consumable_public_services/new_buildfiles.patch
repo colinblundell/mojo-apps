@@ -1,0 +1,17 @@
+diff --git a/mojo/services/build/config/BUILD.gn b/mojo/services/build/config/BUILD.gn
+new file mode 100644
+index 0000000..e961ec5
+--- /dev/null
++++ b/mojo/services/build/config/BUILD.gn
+@@ -0,0 +1,11 @@
++# Copyright 2014 The Chromium Authors. All rights reserved.
++# Use of this source code is governed by a BSD-style license that can be
++# found in the LICENSE file.
++
++import("//build/config/mojo.gni")
++config("services") {
++  include_dirs = [
++    mojo_services_root,
++    root_gen_dir + mojo_services_root,
++  ]
++}

@@ -19,8 +19,8 @@ shared_library("sample_app") {
     rebase_path("mojo/public/cpp/bindings", ".", mojo_root),
     rebase_path("mojo/public/cpp/utility", ".", mojo_root),
     rebase_path("mojo/public/gles2:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/services/public/interfaces/geometry", ".", mojo_root),
-    rebase_path("mojo/services/public/interfaces/native_viewport", ".", mojo_root),
+    rebase_path("services/public/interfaces/geometry", ".", mojo_root),
+    rebase_path("services/public/interfaces/native_viewport", ".", mojo_root),
   ]
 }
 
