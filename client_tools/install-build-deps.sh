@@ -16,7 +16,7 @@ MOJO_SDK_ROOT_DIR=$ROOT_DIR/$MOJO_SDK_ROOT
 MOJO_SDK_DIR=$MOJO_SDK_ROOT_DIR/mojo
 
 # Extract the Mojo services root from //build/config/mojo.gni.
-MOJO_SERVICES_ROOT=`\grep "mojo__services_root = " build/config/mojo.gni | cut -d"=" -f2 | tr -d '" '`
+MOJO_SERVICES_ROOT=`\grep "mojo_services_root = " build/config/mojo.gni | cut -d"=" -f2 | tr -d '" '`
 # Strip the "//" from the beginning.
 MOJO_SERVICES_ROOT=${MOJO_SERVICES_ROOT:2}
 MOJO_SERVICES_ROOT_DIR=$ROOT_DIR/$MOJO_SERVICES_ROOT
