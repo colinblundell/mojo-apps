@@ -99,8 +99,9 @@ def copy(source_dir, target_dir, dirs_to_copy):
     if os.path.exists(output_dir):
       print "removing directory %s" % output_dir
       system(["git", "rm", "-r", output_dir])
-    system("cp", "-r", os.path.join(source_dir, d), output_dir)
-    system("git", "add", output_dir)
+    system(["cp", "-r", os.path.join(source_dir, d), output_dir])
+    system(["rm", "-rf", os.path.join(output_dir, ".git")])
+    system(["git", "add", output_dir])
   commit("Update dirs copied in from the Mojo repo")
 
 if len(sys.argv) != 3:
@@ -121,6 +122,10 @@ mojo_sdk_dir = os.path.join(root_path, mojo_root, "mojo")
 mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
 
+# Copy in dirs of client apps that aren't tracked in git.
+copy(mojo_repo_dir, root_path, client_dirs_to_copy)
+sys.exit(0)
+
 # Rev the SDK and shell.
 client_tools_path = os.path.join(root_path, "client_tools")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
@@ -134,9 +139,6 @@ system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
 rev(mojo_repo_dir, root_path, client_dirs_to_clone)
 system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
 commit("Restore mojo.gni")
-
-# Copy in dirs of client apps that aren't tracked in git.
-copy(mojo_repo_dir, root_path, client_dirs_to_copy)
 
 # Update buildfiles of client apps.
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-i", "change_buildfiles.py"])
