@@ -51,7 +51,6 @@ client_dirs_to_copy = [
   "third_party/angle",
   "third_party/boringssl/src",
   "third_party/mesa/src",
-  "third_party/yasm/binaries",
   "third_party/yasm/source/patched-yasm",
 ]
 
@@ -93,7 +92,7 @@ def rev(source_dir, target_dir, dirs_to_clone):
   commit("Update mojo sdk to rev " + src_commit)
 
 def copy(source_dir, target_dir, dirs_to_copy):
-  os.chdir(source_dir)
+  os.chdir(target_dir)
   for d in dirs_to_copy:
     output_dir = os.path.join(target_dir, d)
     if os.path.exists(output_dir):
