@@ -133,24 +133,24 @@ chromium_repo_dir = sys.argv[2]
 
 # Rev the SDK and shell.
 client_tools_path = os.path.join(root_path, "client_tools")
-#rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
-#system([os.path.join(client_tools_path, "download_mojo_shell.py")])
-#
-## Rev services.
-#rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)
-#
-## Update the Mojo build for the new SDK.
-#system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
-#
-## Rev client apps.
-#system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
-#rev(mojo_repo_dir, root_path, client_dirs_to_clone)
-#system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
-#commit("Restore mojo.gni")
-#
-## Copy in dirs of client apps that aren't tracked in git.
-#copy(mojo_repo_dir, root_path, client_dirs_to_copy)
-#
+rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
+system([os.path.join(client_tools_path, "download_mojo_shell.py")])
+
+# Rev services.
+rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)
+
+# Update the Mojo build for the new SDK.
+system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
+
+# Rev client apps.
+system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
+rev(mojo_repo_dir, root_path, client_dirs_to_clone)
+system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
+commit("Restore mojo.gni")
+
+# Copy in dirs of client apps that aren't tracked in git.
+copy(mojo_repo_dir, root_path, client_dirs_to_copy)
+
 # Update buildfiles of client apps.
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-fi", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
