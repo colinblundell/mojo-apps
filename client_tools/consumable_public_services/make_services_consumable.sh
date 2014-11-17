@@ -11,5 +11,6 @@ git apply $SCRIPT_DIR/mojo_gni.patch
 git apply $SCRIPT_DIR/add_missing_dependencies.patch
 git apply $SCRIPT_DIR/presubmit_fixup.patch
 git apply $SCRIPT_DIR/mojom_public_configs.patch
+git apply $SCRIPT_DIR/mojom_import_dirs.patch
 git add mojo/services/build
 git add mojo/services/public/DEPS
