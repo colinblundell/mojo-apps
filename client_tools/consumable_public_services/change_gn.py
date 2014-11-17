@@ -7,7 +7,7 @@
 [r'"//(testing[^"]*")', r'rebase_path("\1, ".", mojo_third_party_root)', ['mojo/services/public*BUILD.gn']],
 # Adding the public configs.
 [r'([ ]+)(sources =.*)', r'\1public_configs = [ rebase_path("mojo/build/config", ".", mojo_root) + ":mojo_sdk" ]\n\1\2', ['mojo/services/public/*BUILD.gn']],
-[r'([ ]+)(sources =.*)', r'\1public_configs += [ rebase_path("services/build/config", ".", mojo_services_root) + ":services" ]\n\1\2', ['mojo/services/public/cpp*BUILD.gn']],
+[r'([ ]+)(sources =.*)', r'\1public_configs += [ rebase_path("services/build/config", ".", mojo_services_root) + ":services" ]\n\1\2', ['mojo/services/public/*BUILD.gn']],
 # Changing the include paths to be relative.
 [r'"mojo/services/public', r'"services/public', ['mojo/services/public*cc', 'mojo/services/public*h', 'mojo/services/public*mojom']],
 # Removing the public config from BUILD.gn files that don't use it to avoid
