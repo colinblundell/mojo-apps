@@ -131,8 +131,8 @@ mojo_services_dir = os.path.join(root_path, mojo_services_root, "services")
 mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
 
-## Rev the SDK and shell.
-#client_tools_path = os.path.join(root_path, "client_tools")
+# Rev the SDK and shell.
+client_tools_path = os.path.join(root_path, "client_tools")
 #rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
 #system([os.path.join(client_tools_path, "download_mojo_shell.py")])
 #
