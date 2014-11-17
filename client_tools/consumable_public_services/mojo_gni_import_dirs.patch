@@ -1,0 +1,12 @@
+diff --git a/build/config/mojo.gni b/build/config/mojo.gni
+index 9e3faec..aade122 100644
+--- a/build/config/mojo.gni
++++ b/build/config/mojo.gni
+@@ -5,3 +5,7 @@
+ mojo_root = "//"
+ mojo_services_root = "//mojo"
+ mojo_third_party_root = mojo_root
++mojom_import_dirs = [
++  mojo_root,
++  mojo_services_root,
++]
