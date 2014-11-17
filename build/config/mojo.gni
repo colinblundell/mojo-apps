@@ -1,5 +1,5 @@
 # NOTE: The two below variables have to be defined to string literals to be
 # parsed correctly by //client_tools/install_build_deps.sh.
-mojo_root = "//external/"
-mojo_services_root = "//core_mojo/"
+mojo_root = "//third_party/"
+mojo_services_root = "//third_party/"
 mojo_third_party_root = mojo_root + "/mojo/"
