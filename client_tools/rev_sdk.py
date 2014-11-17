@@ -124,7 +124,9 @@ execfile(mojo_gni_file)
 assert(mojo_root.startswith("//"))
 mojo_root = mojo_root[2:]
 mojo_sdk_dir = os.path.join(root_path, mojo_root, "mojo")
-mojo_services_dir = os.path.join(root_path, mojo_root, "services")
+assert(mojo_services_root.startswith("//"))
+mojo_services_root = mojo_services_root[2:]
+mojo_services_dir = os.path.join(root_path, mojo_services_root, "services")
 
 mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
