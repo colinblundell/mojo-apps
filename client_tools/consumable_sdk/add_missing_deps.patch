@@ -1,0 +1,20 @@
+diff --git a/mojo/edk/js/BUILD.gn b/mojo/edk/js/BUILD.gn
+index f1275cc..1c7ce9b 100644
+--- a/mojo/edk/js/BUILD.gn
++++ b/mojo/edk/js/BUILD.gn
+@@ -27,6 +27,7 @@ source_set("js") {
+     "//base",
+     "//gin",
+     "//v8",
++    rebase_path("mojo/public/cpp/environment", ".", mojo_root),
+   ]
+ }
+ 
+@@ -34,6 +35,7 @@ source_set("js_unittests") {
+   testonly = true
+   deps = [
+     "//mojo/edk/test:test_support",
++    ":js",
+   ]
+ 
+   sources = [

@@ -1,0 +1,42 @@
+diff --git a/mojo/edk/js/test/BUILD.gn b/mojo/edk/js/test/BUILD.gn
+index a405745..6323279 100644
+--- a/mojo/edk/js/test/BUILD.gn
++++ b/mojo/edk/js/test/BUILD.gn
+@@ -11,11 +11,16 @@ test("js_unittests") {
+     "//mojo/edk/js",
+     "//mojo/edk/test:run_all_unittests",
+     "//mojo/edk/test:test_support",
+-    rebase_path("mojo/public/cpp/utility", ".", mojo_root),
+     "//mojo/environment:chromium",
+-    rebase_path("mojo/public/interfaces/bindings/tests:test_interfaces", ".", mojo_root),
+   ]
+ 
++  relative_deps = [
++    "mojo/public/cpp/utility",
++    "mojo/public/interfaces/bindings/tests:test_interfaces",
++  ]
++
++  deps += rebase_path(relative_deps, ".", mojo_root)
++
+   sources = [ "run_js_tests.cc" ]
+ }
+ 
+@@ -27,11 +32,16 @@ test("js_integration_tests") {
+     "//mojo/edk/js/tests:js_to_cpp_tests",
+     "//mojo/edk/test:run_all_unittests",
+     "//mojo/edk/test:test_support",
+-    rebase_path("mojo/public/cpp/bindings", ".", mojo_root),
+     "//mojo/environment:chromium",
+-    rebase_path("mojo/public/interfaces/bindings/tests:test_interfaces", ".", mojo_root),
+   ]
+ 
++  relative_deps = [
++    "mojo/public/cpp/bindings",
++    "mojo/public/interfaces/bindings/tests:test_interfaces",
++  ]
++
++  deps += rebase_path(relative_deps, ".", mojo_root)
++
+   sources = [
+     "run_js_integration_tests.cc"
+   ]
