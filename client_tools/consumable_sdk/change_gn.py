@@ -1,10 +1,10 @@
 [
 # Changing the dependencies on //mojo to be relative.
-[r'"//(mojo/public[^"]*")', r'rebase_path("\1, ".", mojo_root)', ['mojo/public*BUILD.gn', 'mojo/edk*BUILD.gn', 'mojo/services/public*BUILD.gn', "*mojom.gni"]],
+[r'"//(mojo/public[^"]*")', r'rebase_path("\1, ".", mojo_root)', ['mojo/public*BUILD.gn', 'mojo/edk*BUILD.gn', 'mojo/services/public*BUILD.gn', "mojo/public*.gni"]],
 # Changing the dependencies on //third_party to be relative.
-[r'"//(third_party[^"]*")', r'rebase_path("\1, ".", mojo_third_party_root)', ['mojo/public*BUILD.gn', "*mojom.gni"]],
+[r'"//(third_party[^"]*")', r'rebase_path("\1, ".", mojo_third_party_root)', ['mojo/public*BUILD.gn', "mojo/public*.gni"]],
 # Changing the dependencies on //testing to be relative.
-[r'"//(testing[^"]*")', r'rebase_path("\1, ".", mojo_third_party_root)', ['mojo/public*BUILD.gn', "*mojom.gni"]],
+[r'"//(testing[^"]*")', r'rebase_path("\1, ".", mojo_third_party_root)', ['mojo/public*BUILD.gn', "*mojo/public*.gni"]],
 # Adding the import of //build/config/mojo.gni.
 [r'(LICENSE file.)', r'\1\n\nimport("//build/config/mojo.gni")', ['mojo/public*BUILD.gn', 'mojo/edk*BUILD.gn', 'mojo/services/public*BUILD.gn', "*mojom.gni"]],
 # Adding the public config.
