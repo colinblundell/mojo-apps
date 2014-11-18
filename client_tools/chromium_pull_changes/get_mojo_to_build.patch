@@ -1,0 +1,23 @@
+diff --git a/mojo/environment/BUILD.gn b/mojo/environment/BUILD.gn
+index 804a951..e589096 100644
+--- a/mojo/environment/BUILD.gn
++++ b/mojo/environment/BUILD.gn
+@@ -9,8 +9,8 @@ source_set("chromium") {
+   sources = [
+     "environment.cc",
+     # TODO(vtl): This is kind of ugly. (See TODO in logging.h.)
+-    "../public/cpp/environment/logging.h",
+-    "../public/cpp/environment/lib/logging.cc",
++    "//third_party/mojo/mojo/public/cpp/environment/logging.h",
++    "//third_party/mojo/mojo/public/cpp/environment/lib/logging.cc",
+   ]
+ 
+   public_deps = [
+@@ -32,6 +32,7 @@ component("chromium_impl") {
+     "default_run_loop_impl.h",
+   ]
+ 
++  public_configs = [ "//third_party/mojo/mojo/build/config:mojo_sdk" ]
+   defines = [
+     "MOJO_ENVIRONMENT_IMPL_IMPLEMENTATION",
+   ]

@@ -1,0 +1,13 @@
+diff --git a/build/config/mojo.gni b/build/config/mojo.gni
+new file mode 100644
+index 0000000..fbfa068
+--- /dev/null
++++ b/build/config/mojo.gni
+@@ -0,0 +1,7 @@
++mojo_root = "//third_party/mojo/"
++mojo_services_root = mojo_root
++mojo_third_party_root = "//"
++mojom_import_dirs = [
++  mojo_root,
++  mojo_services_root
++]
