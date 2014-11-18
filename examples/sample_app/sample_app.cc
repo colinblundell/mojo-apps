@@ -16,8 +16,8 @@
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/public/cpp/utility/run_loop.h"
-#include "mojo/services/public/interfaces/gpu/gpu.mojom.h"
-#include "mojo/services/public/interfaces/native_viewport/native_viewport.mojom.h"
+#include "services/public/interfaces/gpu/gpu.mojom.h"
+#include "services/public/interfaces/native_viewport/native_viewport.mojom.h"
 
 namespace examples {
 
