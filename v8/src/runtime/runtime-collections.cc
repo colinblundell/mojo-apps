@@ -92,6 +92,20 @@ RUNTIME_FUNCTION(Runtime_SetIteratorInitialize) {
 }
 
 
+RUNTIME_FUNCTION(Runtime_SetIteratorClone) {
+  HandleScope scope(isolate);
+  DCHECK(args.length() == 1);
+  CONVERT_ARG_HANDLE_CHECKED(JSSetIterator, holder, 0);
+
+  Handle<JSSetIterator> result = isolate->factory()->NewJSSetIterator();
+  result->set_table(holder->table());
+  result->set_index(Smi::FromInt(Smi::cast(holder->index())->value()));
+  result->set_kind(Smi::FromInt(Smi::cast(holder->kind())->value()));
+
+  return *result;
+}
+
+
 RUNTIME_FUNCTION(Runtime_SetIteratorNext) {
   SealHandleScope shs(isolate);
   DCHECK(args.length() == 2);
@@ -197,25 +211,45 @@ RUNTIME_FUNCTION(Runtime_MapIteratorInitialize) {
 }
 
 
-RUNTIME_FUNCTION(Runtime_GetWeakMapEntries) {
+RUNTIME_FUNCTION(Runtime_MapIteratorClone) {
   HandleScope scope(isolate);
   DCHECK(args.length() == 1);
+  CONVERT_ARG_HANDLE_CHECKED(JSMapIterator, holder, 0);
+
+  Handle<JSMapIterator> result = isolate->factory()->NewJSMapIterator();
+  result->set_table(holder->table());
+  result->set_index(Smi::FromInt(Smi::cast(holder->index())->value()));
+  result->set_kind(Smi::FromInt(Smi::cast(holder->kind())->value()));
+
+  return *result;
+}
+
+
+RUNTIME_FUNCTION(Runtime_GetWeakMapEntries) {
+  HandleScope scope(isolate);
+  DCHECK(args.length() == 2);
   CONVERT_ARG_HANDLE_CHECKED(JSWeakCollection, holder, 0);
+  CONVERT_NUMBER_CHECKED(int, max_entries, Int32, args[1]);
+  RUNTIME_ASSERT(max_entries >= 0);
+
   Handle<ObjectHashTable> table(ObjectHashTable::cast(holder->table()));
+  if (max_entries == 0 || max_entries > table->NumberOfElements()) {
+    max_entries = table->NumberOfElements();
+  }
   Handle<FixedArray> entries =
-      isolate->factory()->NewFixedArray(table->NumberOfElements() * 2);
+      isolate->factory()->NewFixedArray(max_entries * 2);
   {
     DisallowHeapAllocation no_gc;
-    int number_of_non_hole_elements = 0;
-    for (int i = 0; i < table->Capacity(); i++) {
+    int count = 0;
+    for (int i = 0; count / 2 < max_entries && i < table->Capacity(); i++) {
       Handle<Object> key(table->KeyAt(i), isolate);
       if (table->IsKey(*key)) {
-        entries->set(number_of_non_hole_elements++, *key);
+        entries->set(count++, *key);
         Object* value = table->Lookup(key);
-        entries->set(number_of_non_hole_elements++, value);
+        entries->set(count++, value);
       }
     }
-    DCHECK_EQ(table->NumberOfElements() * 2, number_of_non_hole_elements);
+    DCHECK_EQ(max_entries * 2, count);
   }
   return *isolate->factory()->NewJSArrayWithElements(entries);
 }
@@ -318,21 +352,24 @@ RUNTIME_FUNCTION(Runtime_WeakCollectionSet) {
 
 RUNTIME_FUNCTION(Runtime_GetWeakSetValues) {
   HandleScope scope(isolate);
-  DCHECK(args.length() == 1);
+  DCHECK(args.length() == 2);
   CONVERT_ARG_HANDLE_CHECKED(JSWeakCollection, holder, 0);
+  CONVERT_NUMBER_CHECKED(int, max_values, Int32, args[1]);
+  RUNTIME_ASSERT(max_values >= 0);
+
   Handle<ObjectHashTable> table(ObjectHashTable::cast(holder->table()));
-  Handle<FixedArray> values =
-      isolate->factory()->NewFixedArray(table->NumberOfElements());
+  if (max_values == 0 || max_values > table->NumberOfElements()) {
+    max_values = table->NumberOfElements();
+  }
+  Handle<FixedArray> values = isolate->factory()->NewFixedArray(max_values);
   {
     DisallowHeapAllocation no_gc;
-    int number_of_non_hole_elements = 0;
-    for (int i = 0; i < table->Capacity(); i++) {
+    int count = 0;
+    for (int i = 0; count < max_values && i < table->Capacity(); i++) {
       Handle<Object> key(table->KeyAt(i), isolate);
-      if (table->IsKey(*key)) {
-        values->set(number_of_non_hole_elements++, *key);
-      }
+      if (table->IsKey(*key)) values->set(count++, *key);
     }
-    DCHECK_EQ(table->NumberOfElements(), number_of_non_hole_elements);
+    DCHECK_EQ(max_values, count);
   }
   return *isolate->factory()->NewJSArrayWithElements(values);
 }

@@ -1308,7 +1308,7 @@ void MacroAssembler::AssertStackConsistency() {
   // Avoid emitting code when !use_real_abort() since non-real aborts cause too
   // much code to be generated.
   if (emit_debug_code() && use_real_aborts()) {
-    if (csp.Is(StackPointer()) || CpuFeatures::IsSupported(ALWAYS_ALIGN_CSP)) {
+    if (csp.Is(StackPointer())) {
       // Always check the alignment of csp if ALWAYS_ALIGN_CSP is true.  We
       // can't check the alignment of csp without using a scratch register (or
       // clobbering the flags), but the processor (or simulator) will abort if
@@ -4087,7 +4087,7 @@ void MacroAssembler::CheckAccessGlobalProxy(Register holder_reg,
 
   // Check the context is a native context.
   if (emit_debug_code()) {
-    // Read the first word and compare to the global_context_map.
+    // Read the first word and compare to the native_context_map.
     Ldr(scratch2, FieldMemOperand(scratch1, HeapObject::kMapOffset));
     CompareRoot(scratch2, Heap::kNativeContextMapRootIndex);
     Check(eq, kExpectedNativeContext);

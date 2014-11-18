@@ -1011,7 +1011,7 @@ class V8_EXPORT Script {
   /**
    * Runs the script returning the resulting value. It will be run in the
    * context in which it was created (ScriptCompiler::CompileBound or
-   * UnboundScript::BindToGlobalContext()).
+   * UnboundScript::BindToCurrentContext()).
    */
   Local<Value> Run();
 
@@ -1624,6 +1624,18 @@ class V8_EXPORT Value : public Data {
    * This is an experimental feature.
    */
   bool IsSet() const;
+
+  /**
+   * Returns true if this value is a Map Iterator.
+   * This is an experimental feature.
+   */
+  bool IsMapIterator() const;
+
+  /**
+   * Returns true if this value is a Set Iterator.
+   * This is an experimental feature.
+   */
+  bool IsSetIterator() const;
 
   /**
    * Returns true if this value is a WeakMap.
@@ -4176,9 +4188,17 @@ class V8_EXPORT Exception {
   static Local<Value> TypeError(Handle<String> message);
   static Local<Value> Error(Handle<String> message);
 
-  static Local<Message> GetMessage(Handle<Value> exception);
+  /**
+   * Creates an error message for the given exception.
+   * Will try to reconstruct the original stack trace from the exception value,
+   * or capture the current stack trace if not available.
+   */
+  static Local<Message> CreateMessage(Handle<Value> exception);
 
-  // DEPRECATED. Use GetMessage()->GetStackTrace()
+  /**
+   * Returns the original stack trace that was captured at the creation time
+   * of a given exception, or an empty handle if not available.
+   */
   static Local<StackTrace> GetStackTrace(Handle<Value> exception);
 };
 
@@ -4240,7 +4260,7 @@ class PromiseRejectMessage {
   V8_INLINE PromiseRejectEvent GetEvent() const { return event_; }
   V8_INLINE Handle<Value> GetValue() const { return value_; }
 
-  // DEPRECATED. Use v8::Exception::GetMessage(GetValue())->GetStackTrace()
+  // DEPRECATED. Use v8::Exception::CreateMessage(GetValue())->GetStackTrace()
   V8_INLINE Handle<StackTrace> GetStackTrace() const { return stack_trace_; }
 
  private:
@@ -6098,7 +6118,7 @@ class Internals {
   static const int kNullValueRootIndex = 7;
   static const int kTrueValueRootIndex = 8;
   static const int kFalseValueRootIndex = 9;
-  static const int kEmptyStringRootIndex = 154;
+  static const int kEmptyStringRootIndex = 155;
 
   // The external allocation limit should be below 256 MB on all architectures
   // to avoid that resource-constrained embedders run low on memory.

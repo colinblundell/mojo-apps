@@ -18,8 +18,7 @@ namespace internal {
 
 
 HeapGraphEdge::HeapGraphEdge(Type type, const char* name, int from, int to)
-    : type_(type),
-      from_index_(from),
+    : bit_field_(TypeField::encode(type) | FromIndexField::encode(from)),
       to_index_(to),
       name_(name) {
   DCHECK(type == kContextVariable
@@ -31,8 +30,7 @@ HeapGraphEdge::HeapGraphEdge(Type type, const char* name, int from, int to)
 
 
 HeapGraphEdge::HeapGraphEdge(Type type, int index, int from, int to)
-    : type_(type),
-      from_index_(from),
+    : bit_field_(TypeField::encode(type) | FromIndexField::encode(from)),
       to_index_(to),
       index_(index) {
   DCHECK(type == kElement || type == kHidden);
@@ -1169,13 +1167,10 @@ void V8HeapExplorer::ExtractJSObjectReferences(
                          "native_context", global_obj->native_context(),
                          GlobalObject::kNativeContextOffset);
     SetInternalReference(global_obj, entry,
-                         "global_context", global_obj->global_context(),
-                         GlobalObject::kGlobalContextOffset);
-    SetInternalReference(global_obj, entry,
                          "global_proxy", global_obj->global_proxy(),
                          GlobalObject::kGlobalProxyOffset);
     STATIC_ASSERT(GlobalObject::kHeaderSize - JSObject::kHeaderSize ==
-                 4 * kPointerSize);
+                 3 * kPointerSize);
   } else if (obj->IsJSArrayBufferView()) {
     JSArrayBufferView* view = JSArrayBufferView::cast(obj);
     SetInternalReference(view, entry, "buffer", view->buffer(),
@@ -1284,7 +1279,7 @@ void V8HeapExplorer::ExtractContextReferences(int entry, Context* context) {
                   Context::FIRST_WEAK_SLOT);
     STATIC_ASSERT(Context::NEXT_CONTEXT_LINK + 1 ==
                   Context::NATIVE_CONTEXT_SLOTS);
-    STATIC_ASSERT(Context::FIRST_WEAK_SLOT + 5 ==
+    STATIC_ASSERT(Context::FIRST_WEAK_SLOT + 4 ==
                   Context::NATIVE_CONTEXT_SLOTS);
   }
 }

@@ -2272,6 +2272,8 @@ void LCodeGen::DoArithmeticD(LArithmeticD* instr) {
   if (instr->op() != Token::MOD) {
     X87PrepareBinaryOp(left, right, result);
   }
+  // Set the precision control to double-precision.
+  __ X87SetFPUCW(0x027F);
   switch (instr->op()) {
     case Token::ADD:
       __ fadd_i(1);
@@ -2306,12 +2308,8 @@ void LCodeGen::DoArithmeticD(LArithmeticD* instr) {
       break;
   }
 
-  // Only always explicitly storing to memory to force the round-down for double
-  // arithmetic.
-  __ lea(esp, Operand(esp, -kDoubleSize));
-  __ fstp_d(Operand(esp, 0));
-  __ fld_d(Operand(esp, 0));
-  __ lea(esp, Operand(esp, kDoubleSize));
+  // Restore the default value of control word.
+  __ X87SetFPUCW(0x037F);
 }
 
 
@@ -3052,6 +3050,7 @@ void LCodeGen::EmitReturn(LReturn* instr, bool dynamic_frame_alignment) {
     }
     __ Ret((parameter_count + extra_value_count) * kPointerSize, ecx);
   } else {
+    DCHECK(info()->IsStub());  // Functions would need to drop one more value.
     Register reg = ToRegister(instr->parameter_count());
     // The argument count parameter is a smi
     __ SmiUntag(reg);
@@ -4065,8 +4064,8 @@ void LCodeGen::DoMathSqrt(LMathSqrt* instr) {
     __ mov(esi, Operand(ebp, StandardFrameConstants::kContextOffset));
     __ push(temp_result);
     __ CallRuntimeSaveDoubles(Runtime::kMathSqrtRT);
-    RecordSafepointWithRegisters(
-        instr->pointer_map(), 0, Safepoint::kNoLazyDeopt);
+    RecordSafepointWithRegisters(instr->pointer_map(), 1,
+                                 Safepoint::kNoLazyDeopt);
     __ StoreToSafepointRegisterSlot(temp_result, eax);
   }
   X87PrepareToWrite(result_reg);
@@ -4280,7 +4279,7 @@ void LCodeGen::DoMathExp(LMathExp* instr) {
     __ mov(esi, Operand(ebp, StandardFrameConstants::kContextOffset));
     __ push(temp_result);
     __ CallRuntimeSaveDoubles(Runtime::kMathExpRT);
-    RecordSafepointWithRegisters(instr->pointer_map(), 0,
+    RecordSafepointWithRegisters(instr->pointer_map(), 1,
                                  Safepoint::kNoLazyDeopt);
     __ StoreToSafepointRegisterSlot(temp_result, eax);
   }

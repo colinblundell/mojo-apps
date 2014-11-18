@@ -17,7 +17,7 @@ RawMachineAssembler::RawMachineAssembler(Graph* graph,
                                          MachineOperatorBuilder::Flags flags)
     : GraphBuilder(graph),
       schedule_(new (zone()) Schedule(zone())),
-      machine_(word, flags),
+      machine_(zone(), word, flags),
       common_(zone()),
       machine_sig_(machine_sig),
       call_descriptor_(
@@ -40,8 +40,7 @@ RawMachineAssembler::RawMachineAssembler(Graph* graph,
 Schedule* RawMachineAssembler::Export() {
   // Compute the correct codegen order.
   DCHECK(schedule_->rpo_order()->empty());
-  ZonePool zone_pool(isolate());
-  Scheduler::ComputeSpecialRPO(&zone_pool, schedule_);
+  Scheduler::ComputeSpecialRPO(zone(), schedule_);
   // Invalidate MachineAssembler.
   Schedule* schedule = schedule_;
   schedule_ = NULL;

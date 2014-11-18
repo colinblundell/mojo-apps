@@ -175,7 +175,7 @@ function GlobalEval(x) {
 
   var global_proxy = %GlobalProxy(global);
 
-  var f = %CompileString(x, false);
+  var f = %CompileString(x, false, 0);
   if (!IS_FUNCTION(f)) return f;
 
   return %_CallFunction(global_proxy, f);
@@ -252,8 +252,8 @@ function ObjectHasOwnProperty(V) {
 
 // ECMA-262 - 15.2.4.6
 function ObjectIsPrototypeOf(V) {
-  CHECK_OBJECT_COERCIBLE(this, "Object.prototype.isPrototypeOf");
   if (!IS_SPEC_OBJECT(V)) return false;
+  CHECK_OBJECT_COERCIBLE(this, "Object.prototype.isPrototypeOf");
   return %IsInPrototypeChain(this, V);
 }
 
@@ -1038,16 +1038,14 @@ function ToNameArray(obj, trap, includeSymbols) {
 }
 
 
-function ObjectGetOwnPropertyKeys(obj, symbolsOnly) {
+function ObjectGetOwnPropertyKeys(obj, filter) {
   var nameArrays = new InternalArray();
-  var filter = symbolsOnly ?
-      PROPERTY_ATTRIBUTES_STRING | PROPERTY_ATTRIBUTES_PRIVATE_SYMBOL :
-      PROPERTY_ATTRIBUTES_SYMBOLIC;
+  filter |= PROPERTY_ATTRIBUTES_PRIVATE_SYMBOL;
 
   // Find all the indexed properties.
 
   // Only get own element names if we want to include string keys.
-  if (!symbolsOnly) {
+  if ((filter & PROPERTY_ATTRIBUTES_STRING) === 0) {
     var ownElementNames = %GetOwnElementNames(obj);
     for (var i = 0; i < ownElementNames.length; ++i) {
       ownElementNames[i] = %_NumberToString(ownElementNames[i]);
@@ -1089,10 +1087,12 @@ function ObjectGetOwnPropertyKeys(obj, symbolsOnly) {
     var j = 0;
     for (var i = 0; i < propertyNames.length; ++i) {
       var name = propertyNames[i];
-      if (symbolsOnly) {
-        if (!IS_SYMBOL(name) || IS_PRIVATE(name)) continue;
+      if (IS_SYMBOL(name)) {
+        if ((filter & PROPERTY_ATTRIBUTES_SYMBOLIC) || IS_PRIVATE(name)) {
+          continue;
+        }
       } else {
-        if (IS_SYMBOL(name)) continue;
+        if (filter & PROPERTY_ATTRIBUTES_STRING) continue;
         name = ToString(name);
       }
       if (seenKeys[name]) continue;
@@ -1116,7 +1116,7 @@ function ObjectGetOwnPropertyNames(obj) {
     return ToNameArray(names, "getOwnPropertyNames", false);
   }
 
-  return ObjectGetOwnPropertyKeys(obj, false);
+  return ObjectGetOwnPropertyKeys(obj, PROPERTY_ATTRIBUTES_SYMBOLIC);
 }
 
 
@@ -1829,7 +1829,7 @@ function FunctionBind(this_arg) { // Length is 1.
 }
 
 
-function NewFunctionString(arguments, function_token) {
+function NewFunctionFromString(arguments, function_token) {
   var n = arguments.length;
   var p = '';
   if (n > 1) {
@@ -1846,21 +1846,20 @@ function NewFunctionString(arguments, function_token) {
     // If the formal parameters include an unbalanced block comment, the
     // function must be rejected. Since JavaScript does not allow nested
     // comments we can include a trailing block comment to catch this.
-    p += '\n/' + '**/';
+    p += '\n\x2f**\x2f';
   }
   var body = (n > 0) ? ToString(arguments[n - 1]) : '';
-  return '(' + function_token + '(' + p + ') {\n' + body + '\n})';
+  var head = '(' + function_token + '(' + p + ') {\n';
+  var src = head + body + '\n})';
+  var global_proxy = %GlobalProxy(global);
+  var f = %_CallFunction(global_proxy, %CompileString(src, true, head.length));
+  %FunctionMarkNameShouldPrintAsAnonymous(f);
+  return f;
 }
 
 
 function FunctionConstructor(arg1) {  // length == 1
-  var source = NewFunctionString(arguments, 'function');
-  var global_proxy = %GlobalProxy(global);
-  // Compile the string in the constructor and not a helper so that errors
-  // appear to come from here.
-  var f = %_CallFunction(global_proxy, %CompileString(source, true));
-  %FunctionMarkNameShouldPrintAsAnonymous(f);
-  return f;
+  return NewFunctionFromString(arguments, 'function');
 }
 
 

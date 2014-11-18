@@ -225,9 +225,12 @@ class Factory FINAL {
   // Create a global (but otherwise uninitialized) context.
   Handle<Context> NewNativeContext();
 
-  // Create a global context.
-  Handle<Context> NewGlobalContext(Handle<JSFunction> function,
+  // Create a script context.
+  Handle<Context> NewScriptContext(Handle<JSFunction> function,
                                    Handle<ScopeInfo> scope_info);
+
+  // Create an empty script context table.
+  Handle<ScriptContextTable> NewScriptContextTable();
 
   // Create a module context.
   Handle<Context> NewModuleContext(Handle<ScopeInfo> scope_info);
@@ -445,6 +448,10 @@ class Factory FINAL {
   Handle<JSDataView> NewJSDataView(Handle<JSArrayBuffer> buffer,
                                    size_t byte_offset, size_t byte_length);
 
+  // TODO(aandrey): Maybe these should take table, index and kind arguments.
+  Handle<JSMapIterator> NewJSMapIterator();
+  Handle<JSSetIterator> NewJSSetIterator();
+
   // Allocates a Harmony proxy.
   Handle<JSProxy> NewJSProxy(Handle<Object> handler, Handle<Object> prototype);
 
@@ -636,10 +643,11 @@ class Factory FINAL {
 
   Handle<DebugInfo> NewDebugInfo(Handle<SharedFunctionInfo> shared);
 
-  // Return a map using the map cache in the native context.
-  // The key the an ordered set of property names.
+  // Return a map for given number of properties using the map cache in the
+  // native context.
   Handle<Map> ObjectLiteralMapFromCache(Handle<Context> context,
-                                        Handle<FixedArray> keys);
+                                        int number_of_properties,
+                                        bool* is_result_from_cache);
 
   // Creates a new FixedArray that holds the data associated with the
   // atom regexp and stores it in the regexp.
@@ -681,14 +689,6 @@ class Factory FINAL {
 
   // Creates a code object that is not yet fully initialized yet.
   inline Handle<Code> NewCodeRaw(int object_size, bool immovable);
-
-  // Create a new map cache.
-  Handle<MapCache> NewMapCache(int at_least_space_for);
-
-  // Update the map cache in the native context with (keys, map)
-  Handle<MapCache> AddToMapCache(Handle<Context> context,
-                                 Handle<FixedArray> keys,
-                                 Handle<Map> map);
 
   // Attempt to find the number in a small cache.  If we finds it, return
   // the string representation of the number.  Otherwise return undefined.

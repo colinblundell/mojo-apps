@@ -120,7 +120,7 @@ REPLACE_RUNTIME_CALL(JSCreateCatchContext, Runtime::kPushCatchContext)
 REPLACE_RUNTIME_CALL(JSCreateWithContext, Runtime::kPushWithContext)
 REPLACE_RUNTIME_CALL(JSCreateBlockContext, Runtime::kPushBlockContext)
 REPLACE_RUNTIME_CALL(JSCreateModuleContext, Runtime::kPushModuleContext)
-REPLACE_RUNTIME_CALL(JSCreateGlobalContext, Runtime::kAbort)
+REPLACE_RUNTIME_CALL(JSCreateScriptContext, Runtime::kAbort)
 #undef REPLACE_RUNTIME
 
 
@@ -223,7 +223,7 @@ void JSGenericLowering::ReplaceWithRuntimeCall(Node* node,
       linkage()->GetRuntimeCallDescriptor(f, nargs, properties);
   Node* ref = ExternalConstant(ExternalReference(f, isolate()));
   Node* arity = Int32Constant(nargs);
-  PatchInsertInput(node, 0, jsgraph()->CEntryStubConstant());
+  PatchInsertInput(node, 0, jsgraph()->CEntryStubConstant(fun->result_size));
   PatchInsertInput(node, nargs + 1, ref);
   PatchInsertInput(node, nargs + 2, arity);
   PatchOperator(node, common()->Call(desc));

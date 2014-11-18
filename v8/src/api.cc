@@ -1567,7 +1567,7 @@ Local<Script> UnboundScript::BindToCurrentContext() {
       function_info(i::SharedFunctionInfo::cast(*obj), obj->GetIsolate());
   i::Handle<i::JSFunction> function =
       obj->GetIsolate()->factory()->NewFunctionFromSharedFunctionInfo(
-          function_info, obj->GetIsolate()->global_context());
+          function_info, obj->GetIsolate()->native_context());
   return ToApiHandle<Script>(function);
 }
 
@@ -1732,7 +1732,7 @@ Local<UnboundScript> ScriptCompiler::CompileUnbound(
     EXCEPTION_PREAMBLE(isolate);
     i::Handle<i::SharedFunctionInfo> result = i::Compiler::CompileScript(
         str, name_obj, line_offset, column_offset, is_shared_cross_origin,
-        isolate->global_context(), NULL, &script_data, options,
+        isolate->native_context(), NULL, &script_data, options,
         i::NOT_NATIVES_CODE);
     has_pending_exception = result.is_null();
     if (has_pending_exception && script_data != NULL) {
@@ -1777,17 +1777,6 @@ Local<Script> ScriptCompiler::Compile(
 ScriptCompiler::ScriptStreamingTask* ScriptCompiler::StartStreamingScript(
     Isolate* v8_isolate, StreamedSource* source, CompileOptions options) {
   i::Isolate* isolate = reinterpret_cast<i::Isolate*>(v8_isolate);
-  if (!isolate->global_context().is_null() &&
-      !isolate->global_context()->IsNativeContext()) {
-    // The context chain is non-trivial, and constructing the corresponding
-    // non-trivial Scope chain outside the V8 heap is not implemented. Don't
-    // stream the script. This will only occur if Harmony scoping is enabled and
-    // a previous script has introduced "let" or "const" variables. TODO(marja):
-    // Implement externalizing ScopeInfos and constructing non-trivial Scope
-    // chains independent of the V8 heap so that we can stream also in this
-    // case.
-    return NULL;
-  }
   return new i::BackgroundParsingTask(source->impl(), options,
                                       i::FLAG_stack_size, isolate);
 }
@@ -1824,7 +1813,7 @@ Local<Script> ScriptCompiler::Compile(Isolate* v8_isolate,
                                          v8::True(v8_isolate));
     }
     source->info->set_script(script);
-    source->info->SetContext(isolate->global_context());
+    source->info->SetContext(isolate->native_context());
 
     EXCEPTION_PREAMBLE(isolate);
 
@@ -2568,6 +2557,16 @@ bool Value::IsGeneratorFunction() const {
 
 bool Value::IsGeneratorObject() const {
   return Utils::OpenHandle(this)->IsJSGeneratorObject();
+}
+
+
+bool Value::IsMapIterator() const {
+  return Utils::OpenHandle(this)->IsJSMapIterator();
+}
+
+
+bool Value::IsSetIterator() const {
+  return Utils::OpenHandle(this)->IsJSSetIterator();
 }
 
 
@@ -3626,7 +3625,9 @@ static inline bool ObjectSetAccessor(Object* obj,
       i::JSObject::SetAccessor(Utils::OpenHandle(obj), info),
       false);
   if (result->IsUndefined()) return false;
-  if (fast) i::JSObject::MigrateSlowToFast(Utils::OpenHandle(obj), 0);
+  if (fast) {
+    i::JSObject::MigrateSlowToFast(Utils::OpenHandle(obj), 0, "APISetAccessor");
+  }
   return true;
 }
 
@@ -3812,7 +3813,8 @@ void v8::Object::TurnOnAccessCheck() {
   // as optimized code does not always handle access checks.
   i::Deoptimizer::DeoptimizeGlobalObject(*obj);
 
-  i::Handle<i::Map> new_map = i::Map::Copy(i::Handle<i::Map>(obj->map()));
+  i::Handle<i::Map> new_map =
+      i::Map::Copy(i::Handle<i::Map>(obj->map()), "APITurnOnAccessCheck");
   new_map->set_is_access_check_needed(true);
   i::JSObject::MigrateToMap(obj, new_map);
 }
@@ -6973,7 +6975,7 @@ DEFINE_ERROR(Error)
 #undef DEFINE_ERROR
 
 
-Local<Message> Exception::GetMessage(Handle<Value> exception) {
+Local<Message> Exception::CreateMessage(Handle<Value> exception) {
   i::Handle<i::Object> obj = Utils::OpenHandle(*exception);
   if (!obj->IsHeapObject()) return Local<Message>();
   i::Isolate* isolate = i::HeapObject::cast(*obj)->GetIsolate();
@@ -7159,6 +7161,19 @@ int CpuProfileNode::GetLineNumber() const {
 int CpuProfileNode::GetColumnNumber() const {
   return reinterpret_cast<const i::ProfileNode*>(this)->
       entry()->column_number();
+}
+
+
+unsigned int CpuProfileNode::GetHitLineCount() const {
+  const i::ProfileNode* node = reinterpret_cast<const i::ProfileNode*>(this);
+  return node->GetHitLineCount();
+}
+
+
+bool CpuProfileNode::GetLineTicks(LineTick* entries,
+                                  unsigned int length) const {
+  const i::ProfileNode* node = reinterpret_cast<const i::ProfileNode*>(this);
+  return node->GetLineTicks(entries, length);
 }
 
 

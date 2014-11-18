@@ -199,7 +199,8 @@ namespace internal {
   F(StoreToSuper_Strict, 4, 1)                             \
   F(StoreToSuper_Sloppy, 4, 1)                             \
   F(StoreKeyedToSuper_Strict, 4, 1)                        \
-  F(StoreKeyedToSuper_Sloppy, 4, 1)
+  F(StoreKeyedToSuper_Sloppy, 4, 1)                        \
+  F(DefaultConstructorSuperCall, 0, 1)
 
 
 #define RUNTIME_FUNCTION_LIST_ALWAYS_2(F)              \
@@ -250,7 +251,7 @@ namespace internal {
   F(DateCacheVersion, 0, 1)                            \
                                                        \
   /* Globals */                                        \
-  F(CompileString, 2, 1)                               \
+  F(CompileString, 3, 1)                               \
                                                        \
   /* Eval */                                           \
   F(GlobalProxy, 1, 1)                                 \
@@ -310,6 +311,7 @@ namespace internal {
   F(SetGetSize, 1, 1)                                  \
                                                        \
   F(SetIteratorInitialize, 3, 1)                       \
+  F(SetIteratorClone, 1, 1)                            \
   F(SetIteratorNext, 2, 1)                             \
                                                        \
   /* Harmony maps */                                   \
@@ -322,6 +324,7 @@ namespace internal {
   F(MapGetSize, 1, 1)                                  \
                                                        \
   F(MapIteratorInitialize, 3, 1)                       \
+  F(MapIteratorClone, 1, 1)                            \
   F(MapIteratorNext, 2, 1)                             \
                                                        \
   /* Harmony weak maps and sets */                     \
@@ -331,8 +334,8 @@ namespace internal {
   F(WeakCollectionDelete, 2, 1)                        \
   F(WeakCollectionSet, 3, 1)                           \
                                                        \
-  F(GetWeakMapEntries, 1, 1)                           \
-  F(GetWeakSetValues, 1, 1)                            \
+  F(GetWeakMapEntries, 2, 1)                           \
+  F(GetWeakSetValues, 2, 1)                            \
                                                        \
   /* Harmony events */                                 \
   F(EnqueueMicrotask, 1, 1)                            \
@@ -348,6 +351,7 @@ namespace internal {
   F(GetObjectContextObjectObserve, 1, 1)               \
   F(GetObjectContextObjectGetNotifier, 1, 1)           \
   F(GetObjectContextNotifierPerformChange, 1, 1)       \
+  F(DeliverObservationChangeRecords, 2, 1)             \
                                                        \
   /* Harmony typed arrays */                           \
   F(ArrayBufferInitialize, 2, 1)                       \
@@ -473,7 +477,7 @@ namespace internal {
   F(CreateJSGeneratorObject, 0, 1)                           \
   F(SuspendJSGeneratorObject, 1, 1)                          \
   F(ResumeJSGeneratorObject, 3, 1)                           \
-  F(ThrowGeneratorStateError, 1, 1)                          \
+  F(GeneratorClose, 1, 1)                                    \
                                                              \
   /* Arrays */                                               \
   F(ArrayConstructor, -1, 1)                                 \
@@ -500,7 +504,7 @@ namespace internal {
   F(PromoteScheduledException, 0, 1)                         \
                                                              \
   /* Contexts */                                             \
-  F(NewGlobalContext, 2, 1)                                  \
+  F(NewScriptContext, 2, 1)                                  \
   F(NewFunctionContext, 1, 1)                                \
   F(PushWithContext, 2, 1)                                   \
   F(PushCatchContext, 3, 1)                                  \
@@ -824,6 +828,9 @@ class Runtime : public AllStatic {
 
   MUST_USE_RESULT static MaybeHandle<Object> GetObjectProperty(
       Isolate* isolate, Handle<Object> object, Handle<Object> key);
+
+  MUST_USE_RESULT static MaybeHandle<Object> GetPrototype(
+      Isolate* isolate, Handle<Object> object);
 
   MUST_USE_RESULT static MaybeHandle<Name> ToName(Isolate* isolate,
                                                   Handle<Object> key);

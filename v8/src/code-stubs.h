@@ -50,7 +50,9 @@ namespace internal {
   V(StringCompare)                          \
   V(StubFailureTrampoline)                  \
   V(SubString)                              \
+  V(ToNumber)                               \
   /* HydrogenCodeStubs */                   \
+  V(AllocateHeapNumber)                     \
   V(ArrayNArgumentsConstructor)             \
   V(ArrayNoArgumentConstructor)             \
   V(ArraySingleArgumentConstructor)         \
@@ -67,6 +69,7 @@ namespace internal {
   V(InternalArrayNoArgumentConstructor)     \
   V(InternalArraySingleArgumentConstructor) \
   V(KeyedLoadGeneric)                       \
+  V(LoadScriptContextField)                 \
   V(LoadDictionaryElement)                  \
   V(LoadFastElement)                        \
   V(MegamorphicLoad)                        \
@@ -74,9 +77,9 @@ namespace internal {
   V(NumberToString)                         \
   V(RegExpConstructResult)                  \
   V(StoreFastElement)                       \
+  V(StoreScriptContextField)                \
   V(StringAdd)                              \
   V(ToBoolean)                              \
-  V(ToNumber)                               \
   V(TransitionElementsKind)                 \
   V(VectorKeyedLoad)                        \
   V(VectorLoad)                             \
@@ -91,9 +94,7 @@ namespace internal {
 
 // List of code stubs only used on ARM 32 bits platforms.
 #if V8_TARGET_ARCH_ARM
-#define CODE_STUB_LIST_ARM(V) \
-  V(DirectCEntry)             \
-  V(WriteInt32ToHeapNumber)
+#define CODE_STUB_LIST_ARM(V) V(DirectCEntry)
 
 #else
 #define CODE_STUB_LIST_ARM(V)
@@ -112,17 +113,15 @@ namespace internal {
 
 // List of code stubs only used on MIPS platforms.
 #if V8_TARGET_ARCH_MIPS
-#define CODE_STUB_LIST_MIPS(V)  \
-  V(DirectCEntry)               \
-  V(RestoreRegistersState)      \
-  V(StoreRegistersState)        \
-  V(WriteInt32ToHeapNumber)
+#define CODE_STUB_LIST_MIPS(V) \
+  V(DirectCEntry)              \
+  V(RestoreRegistersState)     \
+  V(StoreRegistersState)
 #elif V8_TARGET_ARCH_MIPS64
-#define CODE_STUB_LIST_MIPS(V)  \
-  V(DirectCEntry)               \
-  V(RestoreRegistersState)      \
-  V(StoreRegistersState)        \
-  V(WriteInt32ToHeapNumber)
+#define CODE_STUB_LIST_MIPS(V) \
+  V(DirectCEntry)              \
+  V(RestoreRegistersState)     \
+  V(StoreRegistersState)
 #else
 #define CODE_STUB_LIST_MIPS(V)
 #endif
@@ -544,15 +543,6 @@ class NopRuntimeCallHelper : public RuntimeCallHelper {
 };
 
 
-class ToNumberStub: public HydrogenCodeStub {
- public:
-  explicit ToNumberStub(Isolate* isolate) : HydrogenCodeStub(isolate) { }
-
-  DEFINE_CALL_INTERFACE_DESCRIPTOR(ToNumber);
-  DEFINE_HYDROGEN_CODE_STUB(ToNumber, HydrogenCodeStub);
-};
-
-
 class NumberToStringStub FINAL : public HydrogenCodeStub {
  public:
   explicit NumberToStringStub(Isolate* isolate) : HydrogenCodeStub(isolate) {}
@@ -585,10 +575,14 @@ class FastNewClosureStub : public HydrogenCodeStub {
   bool is_arrow() const { return IsArrowFunction(kind()); }
   bool is_generator() const { return IsGeneratorFunction(kind()); }
   bool is_concise_method() const { return IsConciseMethod(kind()); }
+  bool is_default_constructor() const { return IsDefaultConstructor(kind()); }
+  bool is_default_constructor_call_super() const {
+    return IsDefaultConstructorCallSuper(kind());
+  }
 
  private:
   class StrictModeBits : public BitField<StrictMode, 0, 1> {};
-  class FunctionKindBits : public BitField<FunctionKind, 1, 3> {};
+  class FunctionKindBits : public BitField<FunctionKind, 1, 5> {};
 
   DEFINE_CALL_INTERFACE_DESCRIPTOR(FastNewClosure);
   DEFINE_HYDROGEN_CODE_STUB(FastNewClosure, HydrogenCodeStub);
@@ -2024,6 +2018,66 @@ class DoubleToIStub : public PlatformCodeStub {
 };
 
 
+class ScriptContextFieldStub : public HandlerStub {
+ public:
+  ScriptContextFieldStub(Isolate* isolate,
+                         const ScriptContextTable::LookupResult* lookup_result)
+      : HandlerStub(isolate) {
+    DCHECK(Accepted(lookup_result));
+    set_sub_minor_key(ContextIndexBits::encode(lookup_result->context_index) |
+                      SlotIndexBits::encode(lookup_result->slot_index));
+  }
+
+  int context_index() const {
+    return ContextIndexBits::decode(sub_minor_key());
+  }
+
+  int slot_index() const { return SlotIndexBits::decode(sub_minor_key()); }
+
+  static bool Accepted(const ScriptContextTable::LookupResult* lookup_result) {
+    return ContextIndexBits::is_valid(lookup_result->context_index) &&
+           SlotIndexBits::is_valid(lookup_result->slot_index);
+  }
+
+ private:
+  static const int kContextIndexBits = 13;
+  static const int kSlotIndexBits = 13;
+  class ContextIndexBits : public BitField<int, 0, kContextIndexBits> {};
+  class SlotIndexBits
+      : public BitField<int, kContextIndexBits, kSlotIndexBits> {};
+
+  virtual Code::StubType GetStubType() OVERRIDE { return Code::FAST; }
+
+  DEFINE_CODE_STUB_BASE(ScriptContextFieldStub, HandlerStub);
+};
+
+
+class LoadScriptContextFieldStub : public ScriptContextFieldStub {
+ public:
+  LoadScriptContextFieldStub(
+      Isolate* isolate, const ScriptContextTable::LookupResult* lookup_result)
+      : ScriptContextFieldStub(isolate, lookup_result) {}
+
+ private:
+  virtual Code::Kind kind() const OVERRIDE { return Code::LOAD_IC; }
+
+  DEFINE_HANDLER_CODE_STUB(LoadScriptContextField, ScriptContextFieldStub);
+};
+
+
+class StoreScriptContextFieldStub : public ScriptContextFieldStub {
+ public:
+  StoreScriptContextFieldStub(
+      Isolate* isolate, const ScriptContextTable::LookupResult* lookup_result)
+      : ScriptContextFieldStub(isolate, lookup_result) {}
+
+ private:
+  virtual Code::Kind kind() const OVERRIDE { return Code::STORE_IC; }
+
+  DEFINE_HANDLER_CODE_STUB(StoreScriptContextField, ScriptContextFieldStub);
+};
+
+
 class LoadFastElementStub : public HydrogenCodeStub {
  public:
   LoadFastElementStub(Isolate* isolate, bool is_js_array,
@@ -2110,6 +2164,17 @@ class TransitionElementsKindStub : public HydrogenCodeStub {
 
   DEFINE_CALL_INTERFACE_DESCRIPTOR(TransitionElementsKind);
   DEFINE_HYDROGEN_CODE_STUB(TransitionElementsKind, HydrogenCodeStub);
+};
+
+
+class AllocateHeapNumberStub FINAL : public HydrogenCodeStub {
+ public:
+  explicit AllocateHeapNumberStub(Isolate* isolate)
+      : HydrogenCodeStub(isolate) {}
+
+ private:
+  DEFINE_CALL_INTERFACE_DESCRIPTOR(AllocateHeapNumber);
+  DEFINE_HYDROGEN_CODE_STUB(AllocateHeapNumber, HydrogenCodeStub);
 };
 
 
@@ -2522,6 +2587,15 @@ class SubStringStub : public PlatformCodeStub {
 
   DEFINE_CALL_INTERFACE_DESCRIPTOR(ContextOnly);
   DEFINE_PLATFORM_CODE_STUB(SubString, PlatformCodeStub);
+};
+
+
+class ToNumberStub FINAL : public PlatformCodeStub {
+ public:
+  explicit ToNumberStub(Isolate* isolate) : PlatformCodeStub(isolate) {}
+
+  DEFINE_CALL_INTERFACE_DESCRIPTOR(ToNumber);
+  DEFINE_PLATFORM_CODE_STUB(ToNumber, PlatformCodeStub);
 };
 
 

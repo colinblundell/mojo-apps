@@ -1,9 +1,9 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/mojo.gni")
 
-import(rebase_path("mojo/public/tools/bindings/mojom.gni", ".", mojo_root))
+import("//mojo/public/mojo_application.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 group("apptest") {
   testonly = true
@@ -14,7 +14,7 @@ group("apptest") {
   ]
 }
 
-shared_library("service") {
+mojo_native_application("service") {
   output_name = "example_service"
 
   sources = [
@@ -26,13 +26,13 @@ shared_library("service") {
 
   deps = [
     ":bindings",
-    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
-    rebase_path("mojo/public/cpp/utility", ".", mojo_root)
+    "//mojo/public/c/system:for_shared_library",
+    "//mojo/public/cpp/application:standalone",
+    "//mojo/public/cpp/utility"
   ]
 }
 
-shared_library("apptests") {
+mojo_native_application("apptests") {
   output_name = "example_apptests"
 
   testonly = true
@@ -47,9 +47,9 @@ shared_library("apptests") {
 
    deps = [
     ":bindings",
-    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:test_support_standalone", ".", mojo_root),
+    "//mojo/public/c/system:for_shared_library",
+    "//mojo/public/cpp/application:standalone",
+    "//mojo/public/cpp/application:test_support_standalone",
    ]
 
    datadeps = [ ":service", ]

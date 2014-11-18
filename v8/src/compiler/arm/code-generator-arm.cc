@@ -193,7 +193,7 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
       break;
     }
     case kArchJmp:
-      __ b(code_->GetLabel(i.InputRpo(0)));
+      __ b(GetLabel(i.InputRpo(0)));
       DCHECK_EQ(LeaveCC, i.OutputSBit());
       break;
     case kArchNop:
@@ -299,6 +299,42 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
       DCHECK_EQ(LeaveCC, i.OutputSBit());
       break;
     }
+    case kArmSxtb:
+      __ sxtb(i.OutputRegister(), i.InputRegister(0), i.InputInt32(1));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmSxth:
+      __ sxth(i.OutputRegister(), i.InputRegister(0), i.InputInt32(1));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmSxtab:
+      __ sxtab(i.OutputRegister(), i.InputRegister(0), i.InputRegister(1),
+               i.InputInt32(2));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmSxtah:
+      __ sxtah(i.OutputRegister(), i.InputRegister(0), i.InputRegister(1),
+               i.InputInt32(2));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmUxtb:
+      __ uxtb(i.OutputRegister(), i.InputRegister(0), i.InputInt32(1));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmUxth:
+      __ uxth(i.OutputRegister(), i.InputRegister(0), i.InputInt32(1));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmUxtab:
+      __ uxtab(i.OutputRegister(), i.InputRegister(0), i.InputRegister(1),
+               i.InputInt32(2));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
+    case kArmUxtah:
+      __ uxtah(i.OutputRegister(), i.InputRegister(0), i.InputRegister(1),
+               i.InputInt32(2));
+      DCHECK_EQ(LeaveCC, i.OutputSBit());
+      break;
     case kArmCmp:
       __ cmp(i.InputRegister(0), i.InputOperand2(1));
       DCHECK_EQ(SetCC, i.OutputSBit());
@@ -515,8 +551,8 @@ void CodeGenerator::AssembleArchBranch(Instruction* instr,
   BasicBlock::RpoNumber fblock =
       i.InputRpo(static_cast<int>(instr->InputCount()) - 1);
   bool fallthru = IsNextInAssemblyOrder(fblock);
-  Label* tlabel = code()->GetLabel(tblock);
-  Label* flabel = fallthru ? &done : code()->GetLabel(fblock);
+  Label* tlabel = GetLabel(tblock);
+  Label* flabel = fallthru ? &done : GetLabel(fblock);
   switch (condition) {
     case kUnorderedEqual:
       __ b(vs, flabel);

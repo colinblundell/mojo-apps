@@ -693,18 +693,28 @@ Handle<Context> Factory::NewNativeContext() {
 }
 
 
-Handle<Context> Factory::NewGlobalContext(Handle<JSFunction> function,
+Handle<Context> Factory::NewScriptContext(Handle<JSFunction> function,
                                           Handle<ScopeInfo> scope_info) {
   Handle<FixedArray> array =
       NewFixedArray(scope_info->ContextLength(), TENURED);
-  array->set_map_no_write_barrier(*global_context_map());
+  array->set_map_no_write_barrier(*script_context_map());
   Handle<Context> context = Handle<Context>::cast(array);
   context->set_closure(*function);
   context->set_previous(function->context());
   context->set_extension(*scope_info);
   context->set_global_object(function->context()->global_object());
-  DCHECK(context->IsGlobalContext());
+  DCHECK(context->IsScriptContext());
   return context;
+}
+
+
+Handle<ScriptContextTable> Factory::NewScriptContextTable() {
+  Handle<FixedArray> array = NewFixedArray(1);
+  array->set_map_no_write_barrier(*script_context_table_map());
+  Handle<ScriptContextTable> context_table =
+      Handle<ScriptContextTable>::cast(array);
+  context_table->set_used(0);
+  return context_table;
 }
 
 
@@ -1722,6 +1732,22 @@ Handle<JSDataView> Factory::NewJSDataView() {
 }
 
 
+Handle<JSMapIterator> Factory::NewJSMapIterator() {
+  Handle<Map> map(isolate()->native_context()->map_iterator_map());
+  CALL_HEAP_FUNCTION(isolate(),
+                     isolate()->heap()->AllocateJSObjectFromMap(*map),
+                     JSMapIterator);
+}
+
+
+Handle<JSSetIterator> Factory::NewJSSetIterator() {
+  Handle<Map> map(isolate()->native_context()->set_iterator_map());
+  CALL_HEAP_FUNCTION(isolate(),
+                     isolate()->heap()->AllocateJSObjectFromMap(*map),
+                     JSSetIterator);
+}
+
+
 namespace {
 
 ElementsKind GetExternalArrayElementsKind(ExternalArrayType type) {
@@ -2061,6 +2087,9 @@ Handle<SharedFunctionInfo> Factory::NewSharedFunctionInfo(
   share->set_inferred_name(*empty_string(), SKIP_WRITE_BARRIER);
   Handle<TypeFeedbackVector> feedback_vector = NewTypeFeedbackVector(0, 0);
   share->set_feedback_vector(*feedback_vector, SKIP_WRITE_BARRIER);
+#if TRACE_MAPS
+  share->set_unique_id(isolate()->GetNextUniqueSharedFunctionInfoId());
+#endif
   share->set_profiler_ticks(0);
   share->set_ast_node_count(0);
   share->set_counters(0);
@@ -2391,35 +2420,42 @@ Handle<JSFunction> Factory::CreateApiFunction(
 }
 
 
-Handle<MapCache> Factory::AddToMapCache(Handle<Context> context,
-                                        Handle<FixedArray> keys,
-                                        Handle<Map> map) {
-  Handle<MapCache> map_cache = handle(MapCache::cast(context->map_cache()));
-  Handle<MapCache> result = MapCache::Put(map_cache, keys, map);
-  context->set_map_cache(*result);
-  return result;
-}
-
-
 Handle<Map> Factory::ObjectLiteralMapFromCache(Handle<Context> context,
-                                               Handle<FixedArray> keys) {
+                                               int number_of_properties,
+                                               bool* is_result_from_cache) {
+  const int kMapCacheSize = 128;
+
+  if (number_of_properties > kMapCacheSize) {
+    *is_result_from_cache = false;
+    return Map::Create(isolate(), number_of_properties);
+  }
+  *is_result_from_cache = true;
+  if (number_of_properties == 0) {
+    // Reuse the initial map of the Object function if the literal has no
+    // predeclared properties.
+    return handle(context->object_function()->initial_map(), isolate());
+  }
+  int cache_index = number_of_properties - 1;
   if (context->map_cache()->IsUndefined()) {
     // Allocate the new map cache for the native context.
-    Handle<MapCache> new_cache = MapCache::New(isolate(), 24);
+    Handle<FixedArray> new_cache = NewFixedArray(kMapCacheSize, TENURED);
     context->set_map_cache(*new_cache);
   }
   // Check to see whether there is a matching element in the cache.
-  Handle<MapCache> cache =
-      Handle<MapCache>(MapCache::cast(context->map_cache()));
-  Handle<Object> result = Handle<Object>(cache->Lookup(*keys), isolate());
-  if (result->IsMap()) return Handle<Map>::cast(result);
-  int length = keys->length();
-  // Create a new map and add it to the cache. Reuse the initial map of the
-  // Object function if the literal has no predeclared properties.
-  Handle<Map> map = length == 0
-                        ? handle(context->object_function()->initial_map())
-                        : Map::Create(isolate(), length);
-  AddToMapCache(context, keys, map);
+  Handle<FixedArray> cache(FixedArray::cast(context->map_cache()));
+  {
+    Object* result = cache->get(cache_index);
+    if (result->IsWeakCell()) {
+      WeakCell* cell = WeakCell::cast(result);
+      if (!cell->cleared()) {
+        return handle(Map::cast(cell->value()), isolate());
+      }
+    }
+  }
+  // Create a new map and add it to the cache.
+  Handle<Map> map = Map::Create(isolate(), number_of_properties);
+  Handle<WeakCell> cell = NewWeakCell(map);
+  cache->set(cache_index, *cell);
   return map;
 }
 
@@ -2437,6 +2473,7 @@ void Factory::SetRegExpAtomData(Handle<JSRegExp> regexp,
   store->set(JSRegExp::kAtomPatternIndex, *data);
   regexp->set_data(*store);
 }
+
 
 void Factory::SetRegExpIrregexpData(Handle<JSRegExp> regexp,
                                     JSRegExp::Type type,
@@ -2457,7 +2494,6 @@ void Factory::SetRegExpIrregexpData(Handle<JSRegExp> regexp,
              Smi::FromInt(capture_count));
   regexp->set_data(*store);
 }
-
 
 
 MaybeHandle<FunctionTemplateInfo> Factory::ConfigureInstance(

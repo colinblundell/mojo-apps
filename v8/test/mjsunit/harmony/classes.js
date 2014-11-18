@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Flags: --harmony
+// Flags: --harmony-classes
 
 (function TestBasics() {
   var C = class C {}
@@ -19,8 +19,16 @@
   assertEquals(Function.prototype, Object.getPrototypeOf(D));
   assertEquals('D', D.name);
 
+  class D2 { constructor() {} }
+  assertEquals('D2', D2.name);
+
+  // TODO(arv): The logic for the name of anonymous functions in ES6 requires
+  // the below to be 'E';
   var E = class {}
-  assertEquals('', E.name);
+  assertEquals('', E.name);  // Should be 'E'.
+
+  var F = class { constructor() {} };
+  assertEquals('', F.name);  // Should be 'F'.
 })();
 
 
@@ -586,6 +594,82 @@ function assertAccessorDescriptor(object, name) {
   assertEquals(2, new C()[2]);
   assertEquals(4, C[4]());
   assertEquals(5, C[5]);
+})();
+
+
+(function TestDefaultConstructorNoCrash() {
+  // Regression test for https://code.google.com/p/v8/issues/detail?id=3661
+  class C {}
+  assertEquals(undefined, C());
+  assertEquals(undefined, C(1));
+  assertTrue(new C() instanceof C);
+  assertTrue(new C(1) instanceof C);
+})();
+
+
+(function TestDefaultConstructor() {
+  var calls = 0;
+  class Base {
+    constructor() {
+      calls++;
+    }
+  }
+  class Derived extends Base {}
+  var object = new Derived;
+  assertEquals(1, calls);
+
+  calls = 0;
+  Derived();
+  assertEquals(1, calls);
+})();
+
+
+(function TestDefaultConstructorArguments() {
+  var args, self;
+  class Base {
+    constructor() {
+      self = this;
+      args = arguments;
+    }
+  }
+  class Derived extends Base {}
+
+  new Derived;
+  assertEquals(0, args.length);
+
+  new Derived(0, 1, 2);
+  assertEquals(3, args.length);
+  assertTrue(self instanceof Derived);
+
+  var arr = new Array(100);
+  var obj = {};
+  Derived.apply(obj, arr);
+  assertEquals(100, args.length);
+  assertEquals(obj, self);
+})();
+
+
+(function TestDefaultConstructorArguments2() {
+  var args;
+  class Base {
+    constructor(x, y) {
+      args = arguments;
+    }
+  }
+  class Derived extends Base {}
+
+  new Derived;
+  assertEquals(0, args.length);
+
+  new Derived(1);
+  assertEquals(1, args.length);
+  assertEquals(1, args[0]);
+
+  new Derived(1, 2, 3);
+  assertEquals(3, args.length);
+  assertEquals(1, args[0]);
+  assertEquals(2, args[1]);
+  assertEquals(3, args[2]);
 })();
 
 

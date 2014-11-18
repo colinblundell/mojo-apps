@@ -233,8 +233,12 @@ void JSObject::PrintProperties(std::ostream& os) {  // NOLINT
       switch (descs->GetType(i)) {
         case FIELD: {
           FieldIndex index = FieldIndex::ForDescriptor(map(), i);
-          os << Brief(RawFastPropertyAt(index)) << " (field at offset "
-             << index.property_index() << ")\n";
+          if (IsUnboxedDoubleField(index)) {
+            os << "<unboxed double> " << RawFastDoublePropertyAt(index);
+          } else {
+            os << Brief(RawFastPropertyAt(index));
+          }
+          os << " (field at offset " << index.property_index() << ")\n";
           break;
         }
         case CONSTANT:
@@ -430,6 +434,9 @@ void Map::MapPrint(std::ostream& os) {  // NOLINT
   os << "\n - instance descriptors " << (owns_descriptors() ? "(own) " : "")
      << "#" << NumberOfOwnDescriptors() << ": "
      << Brief(instance_descriptors());
+  if (FLAG_unbox_double_fields) {
+    os << "\n - layout descriptor: " << Brief(layout_descriptor());
+  }
   if (HasTransitionArray()) {
     os << "\n - transitions: " << Brief(transitions());
   }
@@ -1076,6 +1083,43 @@ void DescriptorArray::PrintDescriptors(std::ostream& os) {  // NOLINT
 }
 
 
+static void PrintBitMask(std::ostream& os, uint32_t value) {  // NOLINT
+  for (int i = 0; i < 32; i++) {
+    if ((i & 7) == 0) os << " ";
+    os << (((value & 1) == 0) ? "_" : "x");
+    value >>= 1;
+  }
+}
+
+
+void LayoutDescriptor::Print() {
+  OFStream os(stdout);
+  this->Print(os);
+  os << std::flush;
+}
+
+
+void LayoutDescriptor::Print(std::ostream& os) {  // NOLINT
+  os << "Layout descriptor: ";
+  if (IsUninitialized()) {
+    os << "<uninitialized>";
+  } else if (IsFastPointerLayout()) {
+    os << "<all tagged>";
+  } else if (IsSmi()) {
+    os << "fast";
+    PrintBitMask(os, static_cast<uint32_t>(Smi::cast(this)->value()));
+  } else {
+    os << "slow";
+    int len = length();
+    for (int i = 0; i < len; i++) {
+      if (i > 0) os << " |";
+      PrintBitMask(os, get_scalar(i));
+    }
+  }
+  os << "\n";
+}
+
+
 void TransitionArray::Print() {
   OFStream os(stdout);
   this->PrintTransitions(os);
@@ -1090,18 +1134,19 @@ void TransitionArray::PrintTransitions(std::ostream& os,
   }
   for (int i = 0; i < number_of_transitions(); i++) {
     Name* key = GetKey(i);
+    Map* target = GetTarget(i);
     os << "   ";
     key->NamePrint(os);
     os << ": ";
     if (key == GetHeap()->frozen_symbol()) {
       os << " (transition to frozen)";
     } else if (key == GetHeap()->elements_transition_symbol()) {
-      os << " (transition to "
-         << ElementsKindToString(GetTarget(i)->elements_kind()) << ")";
+      os << " (transition to " << ElementsKindToString(target->elements_kind())
+         << ")";
     } else if (key == GetHeap()->observed_symbol()) {
       os << " (transition to Object.observe)";
     } else {
-      PropertyDetails details = GetTargetDetails(i);
+      PropertyDetails details = GetTargetDetails(key, target);
       switch (details.type()) {
         case FIELD: {
           os << " (transition to field)";
@@ -1120,7 +1165,7 @@ void TransitionArray::PrintTransitions(std::ostream& os,
       }
       os << ", attrs: " << details.attributes();
     }
-    os << " -> " << Brief(GetTarget(i)) << "\n";
+    os << " -> " << Brief(target) << "\n";
   }
 }
 
@@ -1128,4 +1173,38 @@ void TransitionArray::PrintTransitions(std::ostream& os,
 #endif  // OBJECT_PRINT
 
 
+#if TRACE_MAPS
+
+
+void Name::NameShortPrint() {
+  if (this->IsString()) {
+    PrintF("%s", String::cast(this)->ToCString().get());
+  } else {
+    DCHECK(this->IsSymbol());
+    Symbol* s = Symbol::cast(this);
+    if (s->name()->IsUndefined()) {
+      PrintF("#<%s>", s->PrivateSymbolToName());
+    } else {
+      PrintF("<%s>", String::cast(s->name())->ToCString().get());
+    }
+  }
+}
+
+
+int Name::NameShortPrint(Vector<char> str) {
+  if (this->IsString()) {
+    return SNPrintF(str, "%s", String::cast(this)->ToCString().get());
+  } else {
+    DCHECK(this->IsSymbol());
+    Symbol* s = Symbol::cast(this);
+    if (s->name()->IsUndefined()) {
+      return SNPrintF(str, "#<%s>", s->PrivateSymbolToName());
+    } else {
+      return SNPrintF(str, "<%s>", String::cast(s->name())->ToCString().get());
+    }
+  }
+}
+
+
+#endif  // TRACE_MAPS
 } }  // namespace v8::internal

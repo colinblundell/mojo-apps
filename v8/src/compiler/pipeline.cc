@@ -24,6 +24,7 @@
 #include "src/compiler/machine-operator-reducer.h"
 #include "src/compiler/pipeline-statistics.h"
 #include "src/compiler/register-allocator.h"
+#include "src/compiler/register-allocator-verifier.h"
 #include "src/compiler/schedule.h"
 #include "src/compiler/scheduler.h"
 #include "src/compiler/select-lowering.h"
@@ -53,7 +54,8 @@ class PipelineData {
         graph_(new (graph_zone()) Graph(graph_zone())),
         source_positions_(new SourcePositionTable(graph())),
         machine_(new (graph_zone()) MachineOperatorBuilder(
-            kMachPtr, InstructionSelector::SupportedMachineOperatorFlags())),
+            graph_zone(), kMachPtr,
+            InstructionSelector::SupportedMachineOperatorFlags())),
         common_(new (graph_zone()) CommonOperatorBuilder(graph_zone())),
         javascript_(new (graph_zone()) JSOperatorBuilder(graph_zone())),
         jsgraph_(new (graph_zone())
@@ -495,8 +497,9 @@ Handle<Code> Pipeline::GenerateCode() {
 
 void Pipeline::ComputeSchedule(PipelineData* data) {
   PhaseScope phase_scope(data->pipeline_statistics(), "scheduling");
+  ZonePool::Scope zone_scope(data->zone_pool());
   Schedule* schedule =
-      Scheduler::ComputeSchedule(data->zone_pool(), data->graph());
+      Scheduler::ComputeSchedule(zone_scope.zone(), data->graph());
   TraceSchedule(schedule);
   if (VerifyGraphs()) ScheduleVerifier::Run(schedule);
   data->set_schedule(schedule);
@@ -558,8 +561,10 @@ Handle<Code> Pipeline::GenerateCode(Linkage* linkage, PipelineData* data) {
 
   if (FLAG_trace_turbo) {
     OFStream os(stdout);
+    PrintableInstructionSequence printable = {
+        RegisterConfiguration::ArchDefault(), &sequence};
     os << "----- Instruction sequence before register allocation -----\n"
-       << sequence;
+       << printable;
     TurboCfgFile tcf(isolate());
     tcf << AsC1V("CodeGen", data->schedule(), data->source_positions(),
                  &sequence);
@@ -570,6 +575,13 @@ Handle<Code> Pipeline::GenerateCode(Linkage* linkage, PipelineData* data) {
   if (data->pipeline_statistics() != NULL) {
     data->pipeline_statistics()->BeginPhaseKind("register allocation");
   }
+
+#ifdef DEBUG
+  // Don't track usage for this zone in compiler stats.
+  Zone verifier_zone(info()->isolate());
+  RegisterAllocatorVerifier verifier(
+      &verifier_zone, RegisterConfiguration::ArchDefault(), &sequence);
+#endif
 
   // Allocate registers.
   Frame frame;
@@ -586,8 +598,7 @@ Handle<Code> Pipeline::GenerateCode(Linkage* linkage, PipelineData* data) {
     debug_name = GetDebugName(info());
 #endif
 
-
-    RegisterAllocator allocator(RegisterAllocator::PlatformConfig(),
+    RegisterAllocator allocator(RegisterConfiguration::ArchDefault(),
                                 zone_scope.zone(), &frame, &sequence,
                                 debug_name.get());
     if (!allocator.Allocate(data->pipeline_statistics())) {
@@ -602,9 +613,16 @@ Handle<Code> Pipeline::GenerateCode(Linkage* linkage, PipelineData* data) {
 
   if (FLAG_trace_turbo) {
     OFStream os(stdout);
+    PrintableInstructionSequence printable = {
+        RegisterConfiguration::ArchDefault(), &sequence};
     os << "----- Instruction sequence after register allocation -----\n"
-       << sequence;
+       << printable;
   }
+
+#ifdef DEBUG
+  verifier.VerifyAssignment();
+  verifier.VerifyGapMoves();
+#endif
 
   if (data->pipeline_statistics() != NULL) {
     data->pipeline_statistics()->BeginPhaseKind("code generation");

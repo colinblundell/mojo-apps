@@ -965,6 +965,7 @@ class PreParserScope {
   bool IsDeclared(const PreParserIdentifier& identifier) const { return false; }
   void DeclareParameter(const PreParserIdentifier& identifier, VariableMode) {}
   void RecordArgumentsUsage() {}
+  void RecordSuperUsage() {}
   void RecordThisUsage() {}
 
   // Allow scope->Foo() to work.
@@ -1325,6 +1326,12 @@ class PreParserTraits {
     return PreParserExpression::Default();
   }
 
+  static PreParserExpression DefaultConstructor(bool call_super,
+                                                PreParserScope* scope, int pos,
+                                                int end_pos) {
+    return PreParserExpression::Default();
+  }
+
   static PreParserExpression ExpressionFromLiteral(
       Token::Value token, int pos, Scanner* scanner,
       PreParserFactory* factory) {
@@ -1428,7 +1435,7 @@ class PreParser : public ParserBase<PreParserTraits> {
   // captured the syntax error), and false if a stack-overflow happened
   // during parsing.
   PreParseResult PreParseProgram() {
-    PreParserScope scope(scope_, GLOBAL_SCOPE);
+    PreParserScope scope(scope_, SCRIPT_SCOPE);
     PreParserFactory factory(NULL);
     FunctionState top_scope(&function_state_, &scope_, &scope, &factory);
     bool ok = true;
@@ -2502,6 +2509,7 @@ ParserBase<Traits>::ParseMemberWithNewPrefixesExpression(bool* ok) {
     int new_pos = position();
     ExpressionT result = this->EmptyExpression();
     if (Check(Token::SUPER)) {
+      scope_->RecordSuperUsage();
       result = this->SuperReference(scope_, factory());
     } else {
       result = this->ParseMemberWithNewPrefixesExpression(CHECK_OK);
@@ -2561,6 +2569,7 @@ ParserBase<Traits>::ParseMemberExpression(bool* ok) {
   } else if (peek() == Token::SUPER) {
     int beg_pos = position();
     Consume(Token::SUPER);
+    scope_->RecordSuperUsage();
     Token::Value next = peek();
     if (next == Token::PERIOD || next == Token::LBRACK ||
         next == Token::LPAREN) {
@@ -2747,12 +2756,14 @@ typename ParserBase<Traits>::ExpressionT ParserBase<Traits>::ParseClassLiteral(
     return this->EmptyExpression();
   }
 
+  bool has_extends = false;
   ExpressionT extends = this->EmptyExpression();
   if (Check(Token::EXTENDS)) {
     typename Traits::Type::ScopePtr scope = this->NewScope(scope_, BLOCK_SCOPE);
     BlockState block_state(&scope_, Traits::Type::ptr_to_scope(scope));
     scope_->SetStrictMode(STRICT);
     extends = this->ParseLeftHandSideExpression(CHECK_OK);
+    has_extends = true;
   }
 
   // TODO(arv): Implement scopes and name binding in class body only.
@@ -2790,6 +2801,11 @@ typename ParserBase<Traits>::ExpressionT ParserBase<Traits>::ParseClassLiteral(
 
   int end_pos = peek_position();
   Expect(Token::RBRACE, CHECK_OK);
+
+  if (!has_seen_constructor) {
+    constructor =
+        this->DefaultConstructor(has_extends, scope_, pos, end_pos + 1);
+  }
 
   return this->ClassExpression(name, extends, constructor, properties, pos,
                                end_pos + 1, factory());

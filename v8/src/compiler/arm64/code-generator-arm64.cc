@@ -100,8 +100,7 @@ class Arm64OperandConverter FINAL : public InstructionOperandConverter {
         return MemOperand(InputRegister(index + 0), InputInt32(index + 1));
       case kMode_MRR:
         *first_index += 2;
-        return MemOperand(InputRegister(index + 0), InputRegister(index + 1),
-                          SXTW);
+        return MemOperand(InputRegister(index + 0), InputRegister(index + 1));
     }
     UNREACHABLE();
     return MemOperand(no_reg);
@@ -173,12 +172,10 @@ class Arm64OperandConverter FINAL : public InstructionOperandConverter {
   } while (0)
 
 
-#define ASSEMBLE_TEST_AND_BRANCH(asm_instr, width)             \
-  do {                                                         \
-    bool fallthrough = IsNextInAssemblyOrder(i.InputRpo(3));   \
-    __ asm_instr(i.InputRegister##width(0), i.InputInt6(1),    \
-                 code_->GetLabel(i.InputRpo(2)));              \
-    if (!fallthrough) __ B(code_->GetLabel(i.InputRpo(3)));    \
+#define ASSEMBLE_BRANCH_TO(target)                    \
+  do {                                                \
+    bool fallthrough = IsNextInAssemblyOrder(target); \
+    if (!fallthrough) __ B(GetLabel(target));         \
   } while (0)
 
 
@@ -217,7 +214,7 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
       break;
     }
     case kArchJmp:
-      __ B(code_->GetLabel(i.InputRpo(0)));
+      __ B(GetLabel(i.InputRpo(0)));
       break;
     case kArchNop:
       // don't emit code for nops.
@@ -431,16 +428,28 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
               i.InputInt8(2));
       break;
     case kArm64Tbz:
-      ASSEMBLE_TEST_AND_BRANCH(Tbz, 64);
+      __ Tbz(i.InputRegister64(0), i.InputInt6(1), GetLabel(i.InputRpo(2)));
+      ASSEMBLE_BRANCH_TO(i.InputRpo(3));
       break;
     case kArm64Tbz32:
-      ASSEMBLE_TEST_AND_BRANCH(Tbz, 32);
+      __ Tbz(i.InputRegister32(0), i.InputInt5(1), GetLabel(i.InputRpo(2)));
+      ASSEMBLE_BRANCH_TO(i.InputRpo(3));
       break;
     case kArm64Tbnz:
-      ASSEMBLE_TEST_AND_BRANCH(Tbnz, 64);
+      __ Tbnz(i.InputRegister64(0), i.InputInt6(1), GetLabel(i.InputRpo(2)));
+      ASSEMBLE_BRANCH_TO(i.InputRpo(3));
       break;
     case kArm64Tbnz32:
-      ASSEMBLE_TEST_AND_BRANCH(Tbnz, 32);
+      __ Tbnz(i.InputRegister32(0), i.InputInt5(1), GetLabel(i.InputRpo(2)));
+      ASSEMBLE_BRANCH_TO(i.InputRpo(3));
+      break;
+    case kArm64Cbz32:
+      __ Cbz(i.InputRegister32(0), GetLabel(i.InputRpo(1)));
+      ASSEMBLE_BRANCH_TO(i.InputRpo(2));
+      break;
+    case kArm64Cbnz32:
+      __ Cbnz(i.InputRegister32(0), GetLabel(i.InputRpo(1)));
+      ASSEMBLE_BRANCH_TO(i.InputRpo(2));
       break;
     case kArm64Claim: {
       int words = MiscField::decode(instr->opcode());
@@ -615,8 +624,8 @@ void CodeGenerator::AssembleArchBranch(Instruction* instr,
   BasicBlock::RpoNumber fblock =
       i.InputRpo(static_cast<int>(instr->InputCount()) - 1);
   bool fallthru = IsNextInAssemblyOrder(fblock);
-  Label* tlabel = code()->GetLabel(tblock);
-  Label* flabel = fallthru ? &done : code()->GetLabel(fblock);
+  Label* tlabel = GetLabel(tblock);
+  Label* flabel = fallthru ? &done : GetLabel(fblock);
   switch (condition) {
     case kUnorderedEqual:
       __ B(vs, flabel);
