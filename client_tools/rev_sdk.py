@@ -12,11 +12,7 @@ sdk_dirs_to_clone = [
   "mojo/public",
 
   # The build dependencies of the core SDK.
-  "testing",
-  "third_party/cython",
-  "third_party/khronos",
   "mojo/build/config",
-  "build/secondary/testing",
 ]
 
 services_dirs_to_clone = [
@@ -40,6 +36,9 @@ client_dirs_to_clone = [
   "net",
   "sdch",
   "skia",
+  # NOTE: Contains dependencies of the Mojo SDK as well.
+  "testing",
+  # NOTE: Contains dependencies of the Mojo SDK as well.
   "third_party",
   "ui",
   "url",
@@ -51,6 +50,7 @@ client_dirs_to_clone = [
 
 # Directories not tracked by git that should be copied in.
 client_dirs_to_copy = [
+  "testing/gtest",
   "third_party/angle",
   "third_party/boringssl/src",
   "third_party/mesa/src",
@@ -154,5 +154,3 @@ copy(mojo_repo_dir, root_path, client_dirs_to_copy)
 # Update buildfiles of client apps.
 system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-fi", "change_buildfiles.py"])
 commit("Update BUILD.gn files of client apps")
-
-system([os.path.join(client_tools_path, "set_up_mojo_gn_build.sh"), mojo_root])
