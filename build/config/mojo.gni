@@ -2,7 +2,6 @@
 # parsed correctly by //client_tools/install_build_deps.sh.
 mojo_root = "//third_party/"
 mojo_services_root = "//third_party/"
-mojo_third_party_root = mojo_root + "/mojo/"
 mojom_import_dirs = [
   mojo_root,
   mojo_services_root
