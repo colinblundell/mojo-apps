@@ -1,0 +1,68 @@
+diff --git a/content/child/BUILD.gn b/content/child/BUILD.gn
+index 873b116..8364e46 100644
+--- a/content/child/BUILD.gn
++++ b/content/child/BUILD.gn
+@@ -15,6 +15,10 @@ source_set("child") {
+   sources = rebase_path(content_child_gypi_values.private_child_sources,
+                         ".", "//content")
+ 
++  public_deps = [
++    "//third_party/mojo/mojo/public/cpp/bindings",
++  ]
++
+   deps = [
+     "//base",
+     "//components/tracing",
+diff --git a/content/gpu/BUILD.gn b/content/gpu/BUILD.gn
+index 0c43e53..b932638 100644
+--- a/content/gpu/BUILD.gn
++++ b/content/gpu/BUILD.gn
+@@ -25,6 +25,7 @@ source_set("gpu") {
+   deps = [
+     "//base",
+     "//content:export",
++    "//content/public/child",
+     "//third_party/mojo/mojo/public/interfaces/application",
+     "//skia",
+     "//ui/gl",
+diff --git a/content/public/browser/BUILD.gn b/content/public/browser/BUILD.gn
+index 39bddc4..255261b 100644
+--- a/content/public/browser/BUILD.gn
++++ b/content/public/browser/BUILD.gn
+@@ -43,6 +43,7 @@ source_set("browser_sources") {
+   public_deps = [
+     # We expose skia headers in the public API.
+     "//skia",
++    "//third_party/mojo/mojo/public/cpp/system",
+   ]
+   deps = [
+     "//content/browser",
+diff --git a/content/public/child/BUILD.gn b/content/public/child/BUILD.gn
+index fff416a..a5a933f 100644
+--- a/content/public/child/BUILD.gn
++++ b/content/public/child/BUILD.gn
+@@ -23,8 +23,11 @@ source_set("child_sources") {
+     "//content:content_implementation",
+   ]
+ 
+-  deps = [
++  public_deps = [
+     "//content/child",
++  ]
++
++  deps = [
+     "//content/public/common:common_sources",
+   ]
+ }
+diff --git a/content/public/common/BUILD.gn b/content/public/common/BUILD.gn
+index aa664241..cc85068 100644
+--- a/content/public/common/BUILD.gn
++++ b/content/public/common/BUILD.gn
+@@ -27,6 +27,7 @@ source_set("common_sources") {
+ 
+   public_deps = [
+     "//content/common",
++    "//third_party/mojo/mojo/public/cpp/bindings",
+   ]
+   deps = [
+     "//net",
