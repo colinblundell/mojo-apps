@@ -137,10 +137,10 @@ rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
 system([os.path.join(client_tools_path, "download_mojo_shell.py")])
 
 # Rev services.
-rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)
+#rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)
 
 # Update the Mojo build for the new SDK.
-system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
+#system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
 
 # Rev client apps.
 system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])

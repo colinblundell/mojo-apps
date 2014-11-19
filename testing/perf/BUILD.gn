@@ -2,5 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojo_root = "//"
-mojo_third_party_root = mojo_root
+source_set("perf") {
+  sources = [ "perf_test.cc" ]
+  deps = [ "//base" ]
+}
