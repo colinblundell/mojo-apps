@@ -28,21 +28,21 @@ client_dirs_to_clone = [
   "examples/sample_app",
 
   # Dependencies of client apps.
-#  "base",
-#  "build",
-#  "crypto",
-#  "gin",
-#  "gpu",
-#  "net",
-#  "sdch",
-#  "skia",
+  "base",
+  "build",
+  "crypto",
+  "gin",
+  "gpu",
+  "net",
+  "sdch",
+  "skia",
   # NOTE: Contains dependencies of the Mojo SDK as well.
   "testing",
   # NOTE: Contains dependencies of the Mojo SDK as well.
   "third_party",
-#  "ui",
-#  "url",
-#  "v8",
+  "ui",
+  "url",
+  "v8",
 
   # Support for a gn/ninja client build.
   "tools",
