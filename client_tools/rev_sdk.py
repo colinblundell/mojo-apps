@@ -13,6 +13,10 @@ sdk_dirs_to_clone = [
 
   # The build dependencies of the core SDK.
   "mojo/build/config",
+
+  "third_party/jinja2",
+  "third_party/markupsafe",
+  "third_party/ply",
 ]
 
 services_dirs_to_clone = [
