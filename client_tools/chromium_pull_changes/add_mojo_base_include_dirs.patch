@@ -1,0 +1,32 @@
+diff --git a/mojo/mojo_base.gyp b/mojo/mojo_base.gyp
+index f18649d..b6cce6d 100644
+--- a/mojo/mojo_base.gyp
++++ b/mojo/mojo_base.gyp
+@@ -104,7 +104,13 @@
+       ],
+       'include_dirs': [
+         '..',
++        '../third_party/mojo',
+       ],
++      'direct_dependent_settings': {
++        'include_dirs': [
++          '../third_party/mojo',
++        ],
++      },
+       'export_dependent_settings': [
+         'mojo_environment_chromium_impl',
+       ],
+@@ -132,7 +138,13 @@
+       ],
+       'include_dirs': [
+         '..',
++        '../third_party/mojo',
+       ],
++      'direct_dependent_settings': {
++        'include_dirs': [
++          '../third_party/mojo',
++        ],
++      },
+     },
+     {
+      # GN version: //mojo/application

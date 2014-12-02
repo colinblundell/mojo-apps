@@ -1,0 +1,53 @@
+diff --git a/mojo/cc/DEPS b/mojo/cc/DEPS
+index 9390f5e..0f172c0 100644
+--- a/mojo/cc/DEPS
++++ b/mojo/cc/DEPS
+@@ -2,4 +2,5 @@ include_rules = [
+   "+cc",
+   "-cc/blink",
+   "+gpu/command_buffer/client",
++  "+services",
+ ]
+diff --git a/mojo/converters/geometry/DEPS b/mojo/converters/geometry/DEPS
+index 3e03810..c61584c 100644
+--- a/mojo/converters/geometry/DEPS
++++ b/mojo/converters/geometry/DEPS
+@@ -1,4 +1,5 @@
+ include_rules = [
++  "+services/public/interfaces/geometry",
+   "+ui/gfx/geometry",
+   "+ui/gfx/transform.h",
+ ]
+diff --git a/mojo/converters/input_events/DEPS b/mojo/converters/input_events/DEPS
+index fe1d98e..df6daee 100644
+--- a/mojo/converters/input_events/DEPS
++++ b/mojo/converters/input_events/DEPS
+@@ -1,3 +1,4 @@
+ include_rules = [
++  "+services/public/interfaces/input_events",
+   "+ui/events",
+ ]
+diff --git a/mojo/converters/surfaces/DEPS b/mojo/converters/surfaces/DEPS
+index bce2d34..b9560fa 100644
+--- a/mojo/converters/surfaces/DEPS
++++ b/mojo/converters/surfaces/DEPS
+@@ -5,6 +5,7 @@ include_rules = [
+   "+cc/surfaces",
+   "+gpu/command_buffer/common/mailbox.h",
+   "+gpu/command_buffer/common/mailbox_holder.h",
++  "+services/public/interfaces/surfaces",
+   "+third_party/skia/include",
+   "+ui/gfx/geometry",
+   "+ui/gfx/transform.h",
+diff --git a/mojo/services/DEPS b/mojo/services/DEPS
+index 2bbe62d..905fc22 100644
+--- a/mojo/services/DEPS
++++ b/mojo/services/DEPS
+@@ -2,6 +2,7 @@ include_rules = [
+   "-mojo",
+   "+mojo/common",
+   "+mojo/public",
++  "+services",
+   "+jni",
+ 
+   # TODO(abarth) Instead of having the services depend on the shell, we
