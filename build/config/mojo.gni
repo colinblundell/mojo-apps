@@ -1,7 +1,8 @@
-mojo_root = "//"
-
+# NOTE: The two below variables have to be defined to string literals to be
+# parsed correctly by //client_tools/install_build_deps.sh.
+mojo_root = "//third_party/"
+mojo_services_root = "//third_party/"
 mojom_import_dirs = [
-  # Within the public SDK, imports within mojoms are specified relative to
-  # mojo_root.
   mojo_root,
+  mojo_services_root
 ]
