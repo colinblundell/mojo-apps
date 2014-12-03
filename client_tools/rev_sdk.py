@@ -10,9 +10,6 @@ import sys
 sdk_dirs_to_clone = [
   # The core SDK.
   "mojo/public",
-
-  # The build dependencies of the core SDK.
-  "mojo/build/config",
 ]
 
 services_dirs_to_clone = [
@@ -28,21 +25,21 @@ client_dirs_to_clone = [
   "examples/sample_app",
 
   # Dependencies of client apps.
-  "base",
+#  "base",
   "build",
-  "crypto",
-  "gin",
-  "gpu",
-  "net",
-  "sdch",
-  "skia",
+#  "crypto",
+#  "gin",
+#  "gpu",
+#  "net",
+#  "sdch",
+#  "skia",
   # NOTE: Contains dependencies of the Mojo SDK as well.
   "testing",
   # NOTE: Contains dependencies of the Mojo SDK as well.
   "third_party",
-  "ui",
-  "url",
-  "v8",
+#  "ui",
+#  "url",
+#  "v8",
 
   # Support for a gn/ninja client build.
   "tools",
@@ -134,7 +131,7 @@ chromium_repo_dir = sys.argv[2]
 # Rev the SDK and shell.
 client_tools_path = os.path.join(root_path, "client_tools")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
-system([os.path.join(client_tools_path, "download_mojo_shell.py")])
+#system([os.path.join(client_tools_path, "download_mojo_shell.py")])
 
 # Rev services.
 #rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)

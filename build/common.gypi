@@ -41,7 +41,7 @@
 
             'conditions': [
               # Compute the architecture that we're building on.
-              ['OS=="win" or OS=="mac" or OS=="ios"', {
+              ['OS=="win" or OS=="ios"', {
                 'host_arch%': 'ia32',
               }, {
                 'host_arch%': '<!pymod_do_main(detect_host_arch)',
@@ -787,7 +787,8 @@
           'disable_ftp_support%': 1,
           'enable_extensions%': 0,
           'enable_google_now%': 0,
-          'cld_version%': 1,
+          'cld_version%': 2,
+          'cld2_table_size%': 0,
           'enable_basic_printing%': 0,
           'enable_print_preview%': 0,
           'enable_session_service%': 0,
@@ -996,8 +997,8 @@
 
         # TODO(baixo): Enable v8_use_external_startup_data
         # http://crbug.com/421063
-        ['android_webview_build==0 and android_webview_telemetry_build==0 and chromecast==0', {
-          'v8_use_external_startup_data': 0,
+        ['android_webview_build==0 and android_webview_telemetry_build==0 and chromecast==0 and OS=="android"', {
+          'v8_use_external_startup_data': 1,
         }, {
           'v8_use_external_startup_data': 0,
         }],
@@ -1292,6 +1293,11 @@
     # Experimental setting to optimize Chrome's DLLs with PGO.
     'chrome_pgo_phase%': '0',
 
+    # Whether the VS xtree header has been patched to disable warning 4702. If
+    # it has, then we don't need to disable 4702 (unreachable code warning).
+    # The patch is preapplied to the internal toolchain and hence all bots.
+    'msvs_xtree_patched%': '<!pymod_do_main(win_is_xtree_patched)',
+
     # Clang stuff.
     'clang%': '<(clang)',
     'host_clang%': '<(host_clang)',
@@ -1565,7 +1571,7 @@
       ['OS=="win" and "<!pymod_do_main(dir_exists <(windows_sdk_default_path))"=="True"', {
         'windows_sdk_path%': '<(windows_sdk_default_path)',
       }, {
-        'windows_sdk_path%': 'C:/Program Files (x86)/Windows Kits/8.0',
+        'windows_sdk_path%': 'C:/Program Files (x86)/Windows Kits/8.1',
       }],
       ['OS=="win" and "<!pymod_do_main(dir_exists <(directx_sdk_default_path))"=="True"', {
         'directx_sdk_path%': '<(directx_sdk_default_path)',
@@ -1944,13 +1950,6 @@
           },{
             'msvs_large_module_debug_link_mode%': '2',  # Yes
           }],
-          ['MSVS_VERSION=="2013e"', {
-            'msvs_express%': 1,
-            'secure_atl%': 0,
-          },{
-            'msvs_express%': 0,
-            'secure_atl%': 1,
-          }],
         ],
         'nacl_win64_defines': [
           # This flag is used to minimize dependencies when building
@@ -2276,6 +2275,11 @@
         'arm_thumb%': 1,
       }],
 
+      # Set default compiler flags depending on MIPS architecture variant.
+      ['target_arch=="mipsel" and mips_arch_variant=="r2" and android_webview_build==0', {
+        'mips_fpu_mode%': 'fp32',
+      }],
+
       ['android_webview_build==1', {
         # The WebView build gets its cpu-specific flags from the Android build system.
         'arm_arch%': '',
@@ -2283,6 +2287,7 @@
         'arm_fpu%': '',
         'arm_float_abi%': '',
         'arm_thumb%': 0,
+        'mips_fpu_mode%': '',
       }],
 
       # Enable brlapi by default for chromeos.
@@ -2785,7 +2790,7 @@
           '_SCL_SECURE_NO_DEPRECATE',
           # This define is required to pull in the new Win8 interfaces from
           # system headers like ShObjIdl.h.
-          'NTDDI_VERSION=0x06020000',
+          'NTDDI_VERSION=0x06030000',
           # This is required for ATL to use XP-safe versions of its functions.
           '_USING_V110_SDK71_',
         ],
@@ -3164,6 +3169,12 @@
               'delayimp.lib',
               'credui.lib',
               'netapi32.lib',
+            ],
+            'AdditionalOptions': [
+              # Suggested by Microsoft Devrel to avoid
+              #   LINK : fatal error LNK1248: image size (80000000) exceeds maximum allowable size (80000000)
+              # which started happening more regularly after VS2013 Update 4.
+              '/maxilksize:2147483647',
             ],
           },
         },
@@ -5259,8 +5270,8 @@
     ['OS=="win"', {
       'target_defaults': {
         'defines': [
-          '_WIN32_WINNT=0x0602',
-          'WINVER=0x0602',
+          '_WIN32_WINNT=0x0603',
+          'WINVER=0x0603',
           'WIN32',
           '_WINDOWS',
           'NOMINMAX',
@@ -5269,8 +5280,12 @@
           'CERT_CHAIN_PARA_HAS_EXTRA_FIELDS',
           'WIN32_LEAN_AND_MEAN',
           '_ATL_NO_OPENGL',
+          '_SECURE_ATL',
           # _HAS_EXCEPTIONS must match ExceptionHandling in msvs_settings.
           '_HAS_EXCEPTIONS=0',
+          # Silence some warnings; we can't switch the the 'recommended'
+          # versions as they're not available on old OSs.
+          '_WINSOCK_DEPRECATED_NO_WARNINGS',
         ],
         'conditions': [
           ['buildtype=="Official"', {
@@ -5338,66 +5353,12 @@
               ],
             },
           ],
-          ['secure_atl', {
-            'defines': [
-              '_SECURE_ATL',
-            ],
-          }],
-          ['msvs_express', {
-            'configurations': {
-              'x86_Base': {
-                'msvs_settings': {
-                  'VCLinkerTool': {
-                    'AdditionalLibraryDirectories':
-                      ['<(windows_driver_kit_path)/lib/ATL/i386'],
-                  },
-                  'VCLibrarianTool': {
-                    'AdditionalLibraryDirectories':
-                      ['<(windows_driver_kit_path)/lib/ATL/i386'],
-                  },
-                },
-              },
-              'x64_Base': {
-                'msvs_settings': {
-                  'VCLibrarianTool': {
-                    'AdditionalLibraryDirectories':
-                      ['<(windows_driver_kit_path)/lib/ATL/amd64'],
-                  },
-                  'VCLinkerTool': {
-                    'AdditionalLibraryDirectories':
-                      ['<(windows_driver_kit_path)/lib/ATL/amd64'],
-                  },
-                },
-              },
-            },
-            # https://code.google.com/p/chromium/issues/detail?id=372451#c20
-            # Warning 4702 ("Unreachable code") should be re-enabled once
-            # Express users are updated to VS2013 Update 2.
+          ['msvs_xtree_patched!=1', {
+            # If xtree hasn't been patched, then we disable C4702. Otherwise,
+            # it's enabled. This will generally only be true for system-level
+            # installed Express users.
             'msvs_disabled_warnings': [
-              4702
-            ],
-            'msvs_settings': {
-              'VCCLCompilerTool': {
-                'AdditionalOptions!': [
-                    '/Zc:inline',  # Not supported on non-updated Express.
-                ],
-              },
-              'VCLinkerTool': {
-                # Explicitly required when using the ATL with express
-                'AdditionalDependencies': ['atlthunk.lib'],
-
-                # ATL 8.0 included in WDK 7.1 makes the linker to generate
-                # almost eight hundred LNK4254 and LNK4078 warnings:
-                #   - warning LNK4254: section 'ATL' (50000040) merged into
-                #     '.rdata' (40000040) with different attributes
-                #   - warning LNK4078: multiple 'ATL' sections found with
-                #     different attributes
-                'AdditionalOptions': ['/ignore:4254', '/ignore:4078'],
-              },
-            },
-            'msvs_system_include_dirs': [
-              '<(windows_driver_kit_path)/inc/atl71',
-              '<(windows_driver_kit_path)/inc/mfc42',
+              4702,
             ],
           }],
         ],
@@ -5456,13 +5417,13 @@
           # removed as code is fixed.
           4100, # Unreferenced formal parameter
           4121, # Alignment of a member was sensitive to packing
-          4189, # Local variable is initialized but not referenced
           4244, # Conversion from 'type1' to 'type2', possible loss of data
           4481, # Nonstandard extension used: override specifier 'keyword'
           4505, # Unreferenced local function has been removed
           4510, # Default constructor could not be generated
           4512, # Assignment operator could not be generated
           4610, # Object can never be instantiated
+          4996, # 'X': was declared deprecated (for GetVersionEx).
         ],
         'msvs_settings': {
           'VCCLCompilerTool': {

@@ -78,21 +78,22 @@ class TestRunner(base_test_runner.BaseTestRunner):
     results = base_test_result.TestRunResults()
 
     # Test case statuses.
-    re_run = re.compile('\[ RUN      \] ?(.*)\r\n')
-    re_fail = re.compile('\[  FAILED  \] ?(.*)\r\n')
-    re_ok = re.compile('\[       OK \] ?(.*?) .*\r\n')
+    re_run = re.compile('\\[ RUN      \\] ?(.*)\r\n')
+    re_fail = re.compile('\\[  FAILED  \\] ?(.*?)( \\((\\d+) ms\\))?\r\r\n')
+    re_ok = re.compile('\\[       OK \\] ?(.*?)( \\((\\d+) ms\\))?\r\r\n')
 
     # Test run statuses.
-    re_passed = re.compile('\[  PASSED  \] ?(.*)\r\n')
-    re_runner_fail = re.compile('\[ RUNNER_FAILED \] ?(.*)\r\n')
+    re_passed = re.compile('\\[  PASSED  \\] ?(.*)\r\n')
+    re_runner_fail = re.compile('\\[ RUNNER_FAILED \\] ?(.*)\r\n')
     # Signal handlers are installed before starting tests
     # to output the CRASHED marker when a crash happens.
-    re_crash = re.compile('\[ CRASHED      \](.*)\r\n')
+    re_crash = re.compile('\\[ CRASHED      \\](.*)\r\n')
 
     log = ''
     try:
       while True:
         full_test_name = None
+
         found = p.expect([re_run, re_passed, re_runner_fail],
                          timeout=self._timeout)
         if found == 1:  # re_passed
@@ -105,17 +106,20 @@ class TestRunner(base_test_runner.BaseTestRunner):
           log = p.before.replace('\r', '')
           if found == 0:  # re_ok
             if full_test_name == p.match.group(1).replace('\r', ''):
+              duration_ms = int(p.match.group(3)) if p.match.group(3) else 0
               results.AddResult(base_test_result.BaseTestResult(
                   full_test_name, base_test_result.ResultType.PASS,
-                  log=log))
+                  duration=duration_ms, log=log))
           elif found == 2:  # re_crash
             results.AddResult(base_test_result.BaseTestResult(
                 full_test_name, base_test_result.ResultType.CRASH,
                 log=log))
             break
           else:  # re_fail
+            duration_ms = int(p.match.group(3)) if p.match.group(3) else 0
             results.AddResult(base_test_result.BaseTestResult(
-                full_test_name, base_test_result.ResultType.FAIL, log=log))
+                full_test_name, base_test_result.ResultType.FAIL,
+                duration=duration_ms, log=log))
     except pexpect.EOF:
       logging.error('Test terminated - EOF')
       # We're here because either the device went offline, or the test harness

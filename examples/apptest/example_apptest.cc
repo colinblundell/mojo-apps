@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "examples/apptest/example_client_application.h"
 #include "examples/apptest/example_client_impl.h"
 #include "examples/apptest/example_service.mojom.h"
 #include "mojo/public/cpp/application/application_impl.h"
@@ -17,17 +16,14 @@ namespace {
 // Exemplifies ApplicationTestBase's application testing pattern.
 class ExampleApplicationTest : public test::ApplicationTestBase {
  public:
-  // TODO(msw): Exemplify the use of actual command line arguments.
-  ExampleApplicationTest() : ApplicationTestBase(Array<String>()) {}
+  ExampleApplicationTest() : ApplicationTestBase() {}
   ~ExampleApplicationTest() override {}
 
  protected:
   // ApplicationTestBase:
-  ApplicationDelegate* GetApplicationDelegate() override {
-    return &example_client_application_;
-  }
   void SetUp() override {
     ApplicationTestBase::SetUp();
+
     application_impl()->ConnectToService("mojo:example_service",
                                          &example_service_);
     example_service_.set_client(&example_client_);
@@ -37,8 +33,6 @@ class ExampleApplicationTest : public test::ApplicationTestBase {
   ExampleClientImpl example_client_;
 
  private:
-  ExampleClientApplication example_client_application_;
-
   MOJO_DISALLOW_COPY_AND_ASSIGN(ExampleApplicationTest);
 };
 
@@ -73,6 +67,12 @@ TEST_F(ExampleApplicationTest, RunCallbackViaService) {
   example_service_->RunCallback(SetCallback<bool>(&was_run, true));
   EXPECT_TRUE(example_service_.WaitForIncomingMethodCall());
   EXPECT_TRUE(was_run);
+}
+
+TEST_F(ExampleApplicationTest, CheckCommandLineArg) {
+  // apptest_runner.py adds this argument unconditionally, so we can check for
+  // it here to verify that command line args are getting passed to apptests.
+  ASSERT_TRUE(application_impl()->HasArg("--example_apptest_arg"));
 }
 
 }  // namespace

@@ -307,6 +307,13 @@ char kTSanDefaultSuppressions[] =
 // http://crbug.com/425057
 "deadlock:webrtc::ViEChannelManagerScoped::ViEChannelManagerScoped\n"
 
+// https://crbug.com/433993
+"deadlock:content::WebRtcAudioDeviceImpl\n"
+
+// http://crbug.com/417193
+// Suppressing both AudioContext.{cpp,h}.
+"race:modules/webaudio/AudioContext\n"
+
 // End of suppressions.
 ;  // Please keep this semicolon.
 

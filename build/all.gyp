@@ -56,7 +56,6 @@
             '../mojo/public/mojo_public.gyp:mojo_system',
             '../google_apis/google_apis.gyp:google_apis_unittests',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/ios/ui_ios_tests.gyp:ui_ios_unittests',
             '../ui/gfx/gfx_tests.gyp:gfx_unittests',
           ],
@@ -308,7 +307,6 @@
         '../sql/sql.gyp:sql_unittests',
         '../sync/sync.gyp:sync_unit_tests',
         '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-        '../ui/base/ui_base_tests.gyp:ui_unittests',
         '../ui/display/display.gyp:display_unittests',
         '../ui/gfx/gfx_tests.gyp:gfx_unittests',
         '../url/url.gyp:url_unittests',
@@ -405,6 +403,11 @@
                 },
               }
             }],
+          ],
+        }],
+        ['chromeos==1', {
+          'dependencies': [
+            '../ui/chromeos/ui_chromeos.gyp:ui_chromeos_unittests',
           ],
         }],
         ['OS=="linux"', {
@@ -689,6 +692,13 @@
             '../third_party/webrtc/tools/tools.gyp:frame_analyzer',
             '../third_party/webrtc/tools/tools.gyp:rgba_to_i420_converter',
           ],
+          'conditions': [
+            ['remoting==1', {
+              'dependencies': [
+                '../remoting/remoting.gyp:*',
+              ],
+            }],
+          ],
         },  # target_name: chromium_builder_webrtc
         {
           'target_name': 'chromium_builder_chromedriver',
@@ -733,6 +743,11 @@
                 '../skia/tools/clusterfuzz-data/fuzzers/filter_fuzzer/filter_fuzzer.gyp:filter_fuzzer',
               ],
             }], # internal_filter_fuzzer
+            ['clang==1', {
+              'dependencies': [
+                'sanitizers/sanitizers.gyp:llvm-symbolizer',
+              ],
+            }],
             ['OS=="win" and fastbuild==0 and target_arch=="ia32" and syzyasan==1', {
               'dependencies': [
                 '../chrome/chrome_syzygy.gyp:chrome_dll_syzygy',
@@ -818,7 +833,6 @@
             '../tools/android/android_tools.gyp:memconsumer',
             '../tools/android/findbugs_plugin/findbugs_plugin.gyp:findbugs_plugin_test',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/events/events.gyp:events_unittests',
             # Unit test bundles packaged as an apk.
             '../android_webview/android_webview.gyp:android_webview_test_apk',
@@ -845,7 +859,6 @@
             '../sync/sync.gyp:sync_unit_tests_apk',
             '../tools/android/heap_profiler/heap_profiler.gyp:heap_profiler_unittests_apk',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests_apk',
-            '../ui/base/ui_base_tests.gyp:ui_unittests_apk',
             '../ui/events/events.gyp:events_unittests_apk',
             '../ui/gfx/gfx_tests.gyp:gfx_unittests_apk',
           ],
@@ -853,7 +866,7 @@
             ['enable_webrtc==1 and "<(libpeer_target_type)"=="static_library"', {
               'dependencies': [
                 '../components/devtools_bridge.gyp:devtools_bridge_tests_apk',
-                '../components/devtools_bridge.gyp:devtools_bridge_tests2_apk',
+                '../components/devtools_bridge.gyp:libdevtools_bridge_browsertests',
               ],
             }],
           ],
@@ -868,6 +881,8 @@
             '../tools/android/android_tools.gyp:android_tools',
             '../tools/android/android_tools.gyp:memconsumer',
             # Unit test bundles packaged as an apk.
+            '../components/devtools_bridge.gyp:devtools_bridge_tests_apk',
+            '../components/devtools_bridge.gyp:libdevtools_bridge_browsertests',
             '../content/content_shell_and_tests.gyp:content_browsertests_apk',
           ],
         },  # target_name: android_builder_chromium_webrtc
@@ -921,7 +936,6 @@
             '../tools/perf/clear_system_cache/clear_system_cache.gyp:*',
             '../tools/telemetry/telemetry.gyp:*',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/gfx/gfx_tests.gyp:gfx_unittests',
             '../url/url.gyp:url_unittests',
           ],
@@ -959,7 +973,6 @@
             '../tools/perf/clear_system_cache/clear_system_cache.gyp:*',
             '../tools/telemetry/telemetry.gyp:*',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/gfx/gfx_tests.gyp:gfx_unittests',
             '../url/url.gyp:url_unittests',
           ],
@@ -1008,7 +1021,6 @@
             '../third_party/libaddressinput/libaddressinput.gyp:libaddressinput_unittests',
             '../third_party/libphonenumber/libphonenumber.gyp:libphonenumber_unittests',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/gfx/gfx_tests.gyp:gfx_unittests',
             '../url/url.gyp:url_unittests',
           ],
@@ -1060,7 +1072,6 @@
             '../tools/perf/clear_system_cache/clear_system_cache.gyp:*',
             '../tools/telemetry/telemetry.gyp:*',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/events/events.gyp:events_unittests',
             '../ui/gfx/gfx_tests.gyp:gfx_unittests',
             '../ui/views/views.gyp:views_unittests',
@@ -1206,7 +1217,6 @@
                 '../sync/sync.gyp:sync_unit_tests',
                 '../third_party/widevine/cdm/widevine_cdm.gyp:widevinecdmadapter',
                 '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-                '../ui/base/ui_base_tests.gyp:ui_unittests',
                 '../ui/gfx/gfx_tests.gyp:gfx_unittests',
                 '../ui/views/views.gyp:views_unittests',
                 '../url/url.gyp:url_unittests',
@@ -1249,7 +1259,6 @@
             '../ui/app_list/app_list.gyp:*',
             '../ui/aura/aura.gyp:*',
             '../ui/base/ui_base_tests.gyp:ui_base_unittests',
-            '../ui/base/ui_base_tests.gyp:ui_unittests',
             '../ui/compositor/compositor.gyp:*',
             '../ui/display/display.gyp:display_unittests',
             '../ui/events/events.gyp:*',
@@ -1297,8 +1306,9 @@
             }],
             ['chromeos==1', {
               'dependencies': [
-                '../chromeos/chromeos.gyp:chromeos_unittests',
                 '../athena/main/athena_main.gyp:*',
+                '../chromeos/chromeos.gyp:chromeos_unittests',
+                '../ui/chromeos/ui_chromeos.gyp:ui_chromeos_unittests',
               ],
             }],
             ['use_ozone==1', {
