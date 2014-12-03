@@ -17,6 +17,7 @@ else
   exit 1
 fi
 
+PYTHONPATH=$PYTHONPATH:`pwd`/third_party
 ./buildtools/gn --args="is_clang=false" gen out/Debug
 ./buildtools/ninja -C out/Debug $target_name
 ./buildtools/mojo_shell --origin=file://`pwd`/out/Debug "mojo://$library_name"
