@@ -78,6 +78,11 @@ INSTRUMENTATION_TESTS = dict((suite.name, suite) for suite in [
       'org.chromium.chrome.browser.sync',
       'ChromeSyncShellTest',
       None),
+    I('ChromeDriverWebViewShell',
+      'ChromeDriverWebViewShell.apk',
+      'org.chromium.chromedriver_webview_shell',
+      None,
+      None),
     ])
 
 VALID_TESTS = set(['chromedriver', 'chrome_proxy', 'gpu',
@@ -638,8 +643,9 @@ def MainTestWrapper(options):
       cmd(options)
 
     if options.install:
-      test_obj = INSTRUMENTATION_TESTS[options.install]
-      InstallApk(options, test_obj, print_step=True)
+      for i in options.install:
+        test_obj = INSTRUMENTATION_TESTS[i]
+        InstallApk(options, test_obj, print_step=True)
 
     if options.test_filter:
       bb_utils.RunSteps(options.test_filter, GetTestStepCmds(), options)
@@ -678,7 +684,7 @@ def GetDeviceStepsOptParser():
   parser.add_option('--gtest-filter',
                     help='Filter for running a subset of tests of a gtest test')
   parser.add_option('--asan', action='store_true', help='Run tests with asan.')
-  parser.add_option('--install', metavar='<apk name>',
+  parser.add_option('--install', metavar='<apk name>', action="append",
                     help='Install an apk by name')
   parser.add_option('--no-reboot', action='store_true',
                     help='Do not reboot devices during provisioning.')

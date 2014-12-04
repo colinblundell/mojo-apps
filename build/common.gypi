@@ -213,8 +213,8 @@
             'enable_hidpi%': 1,
           }],
 
-          # Enable the OpenSSL backend on Mac OS.
-          ['OS=="mac"', {
+          # Enable the OpenSSL backend on Mac OS and Windows.
+          ['OS=="mac" or OS=="win"', {
             'use_openssl%': 1,
           }],
 
@@ -567,6 +567,9 @@
       # cross-compile builds.
       'clang%': 0,
 
+      # Use experimental lld linker instead of the platform's default linker.
+      'use_lld%': 0,
+
       # Enable plug-in installation by default.
       'enable_plugin_installation%': 1,
 
@@ -589,8 +592,8 @@
 
       'wix_path%': '<(DEPTH)/third_party/wix',
 
-      # Managed users are enabled by default.
-      'enable_managed_users%': 1,
+      # Supervised users are enabled by default.
+      'enable_supervised_users%': 1,
 
       # Platform natively supports discardable memory.
       'native_discardable_memory%': 0,
@@ -798,7 +801,7 @@
           'notifications%': 0,
           'remoting%': 0,
           'safe_browsing%': 0,
-          'enable_managed_users%': 0,
+          'enable_supervised_users%': 0,
           'enable_task_manager%': 0,
           'use_system_libcxx%': 1,
           'support_pre_M6_history_database%': 0,
@@ -997,7 +1000,7 @@
 
         # TODO(baixo): Enable v8_use_external_startup_data
         # http://crbug.com/421063
-        ['android_webview_build==0 and android_webview_telemetry_build==0 and chromecast==0 and OS=="android"', {
+        ['android_webview_build==0 and android_webview_telemetry_build==0 and chromecast==0 and chromeos==0 and (OS=="android" or OS=="linux" or OS=="mac")', {
           'v8_use_external_startup_data': 1,
         }, {
           'v8_use_external_startup_data': 0,
@@ -1186,7 +1189,7 @@
     'google_api_key%': '<(google_api_key)',
     'google_default_client_id%': '<(google_default_client_id)',
     'google_default_client_secret%': '<(google_default_client_secret)',
-    'enable_managed_users%': '<(enable_managed_users)',
+    'enable_supervised_users%': '<(enable_supervised_users)',
     'native_discardable_memory%': '<(native_discardable_memory)',
     'native_memory_pressure_signals%': '<(native_memory_pressure_signals)',
     'spdy_proxy_auth_property%': '<(spdy_proxy_auth_property)',
@@ -1259,7 +1262,7 @@
     #  'win_use_allocator_shim': 0,
     #  'win_release_RuntimeLibrary': 2
     # to ~/.gyp/include.gypi, gclient runhooks --force, and do a release build.
-    'win_use_allocator_shim%': 1, # 1 = shim allocator via libcmt; 0 = msvcrt
+    'win_use_allocator_shim%': 0, # 1 = shim allocator via libcmt; 0 = msvcrt
 
     # TODO(bradnelson): eliminate this when possible.
     # To allow local gyp files to prevent release.vsprops from being included.
@@ -1302,6 +1305,7 @@
     'clang%': '<(clang)',
     'host_clang%': '<(host_clang)',
     'make_clang_dir%': '<(make_clang_dir)',
+    'use_lld%': '<(use_lld)',
 
     # Control which version of clang to use when building for iOS.  If set to
     # '1', uses the version of clang that ships with Xcode.  If set to '0', uses
@@ -1773,7 +1777,7 @@
         'use_openssl_certs%': 1,
 
         'proprietary_codecs%': '<(proprietary_codecs)',
-        'safe_browsing%': 1,
+        'safe_browsing%': 2,
         'enable_web_speech%': 0,
         'java_bridge%': 1,
         'build_ffmpegsumo%': 0,
@@ -2235,7 +2239,7 @@
         # Iterator debugging is slow.
         'win_debug_disable_iterator_debugging': '1',
         # Try to disable optimizations that mess up stacks in a release build.
-        # DrM-i#1054 (http://code.google.com/p/drmemory/issues/detail?id=1054)
+        # DrM-i#1054 (https://github.com/DynamoRIO/drmemory/issues/1054)
         # /O2 and /Ob0 (disable inline) cannot be used together because of a
         # compiler bug, so we use /Ob1 instead.
         'win_release_InlineFunctionExpansion': '1',
@@ -2345,7 +2349,6 @@
       }, {
          'use_seccomp_bpf%': 0,
       }],
-
       # Set component build with LTO until all tests pass.
       # This also reduces link time.
       ['use_lto==1', {
@@ -2384,7 +2387,7 @@
     # Whether to allow building of the GPU-related isolates.
     'archive_gpu_tests%': 0,
 
-    # Whether to allow building of chromoting related isolates.
+     # Whether to allow building of chromoting related isolates.
     'archive_chromoting_tests%': 0,
   },
   'target_defaults': {
@@ -2944,8 +2947,8 @@
       ['use_icu_alternatives_on_android==1', {
         'defines': ['USE_ICU_ALTERNATIVES_ON_ANDROID=1'],
       }],
-      ['enable_managed_users==1', {
-        'defines': ['ENABLE_MANAGED_USERS=1'],
+      ['enable_supervised_users==1', {
+        'defines': ['ENABLE_SUPERVISED_USERS=1'],
       }],
       ['spdy_proxy_auth_property != ""', {
         'defines': ['SPDY_PROXY_AUTH_PROPERTY="<(spdy_proxy_auth_property)"'],
@@ -3412,7 +3415,7 @@
               'WTF_USE_DYNAMIC_ANNOTATIONS=1',
             ],
           }],
-          ['win_use_allocator_shim==0', {
+          ['OS=="win" and win_use_allocator_shim==0', {
             'defines': ['NO_TCMALLOC'],
           }],
           # _FORTIFY_SOURCE isn't really supported by Clang now, see
@@ -3629,6 +3632,7 @@
                 'cflags': ['-funwind-tables'],
               }, {
                 'cflags': ['-fno-unwind-tables', '-fno-asynchronous-unwind-tables'],
+                'defines': ['NO_UNWIND_TABLES'],
               }],
               # TODO(mostynb): shuffle clang/gcc_version/binutils_version
               # definitions in to the right scope to use them when setting
@@ -3710,6 +3714,7 @@
                 'cflags': ['-funwind-tables'],
               }, {
                 'cflags': ['-fno-unwind-tables', '-fno-asynchronous-unwind-tables'],
+                'defines': ['NO_UNWIND_TABLES'],
               }],
             ],
           },
@@ -4272,7 +4277,6 @@
               ['_toolset=="target"', {
                 'cflags': [
                   '-fsanitize=thread',
-                  '-fPIC',
                   '-fsanitize-blacklist=<(tsan_blacklist)',
                 ],
                 'ldflags': [
@@ -4283,13 +4287,6 @@
                   'DYNAMIC_ANNOTATIONS_EXTERNAL_IMPL=1',
                   'WTF_USE_DYNAMIC_ANNOTATIONS_NOIMPL=1',
                 ],
-                'target_conditions': [
-                  ['_type=="executable"', {
-                    'ldflags': [
-                      '-pie',
-                    ],
-                  }],
-                ],
               }],
             ],
           }],
@@ -4299,7 +4296,6 @@
                 'cflags': [
                   '-fsanitize=memory',
                   '-fsanitize-memory-track-origins=<(msan_track_origins)',
-                  '-fPIC',
                   '-fsanitize-blacklist=<(msan_blacklist)',
                 ],
                 'ldflags': [
@@ -4307,13 +4303,6 @@
                 ],
                 'defines': [
                   'MEMORY_SANITIZER',
-                ],
-                'target_conditions': [
-                  ['_type=="executable"', {
-                    'ldflags': [
-                      '-pie',
-                    ],
-                  }],
                 ],
               }],
             ],
@@ -4648,19 +4637,10 @@
                   '--sysroot=<(android_ndk_sysroot)',
                   '-nostdlib',
                 ],
-                'variables': {
-                  'conditions': [
-                    ['target_arch=="arm" and arm_thumb==1', {
-                      'thumb_option%': '-mthumb',
-                    }, {
-                      'thumb_option%': '',
-                    }],
-                  ],
-                },
                 'libraries': [
                   '-l<(android_stlport_library)',
                   # Manually link the libgcc.a that the cross compiler uses.
-                  '<!(<(android_toolchain)/*-gcc <(thumb_option) -print-libgcc-file-name)',
+                  '<!(<(android_toolchain)/*-gcc -print-libgcc-file-name)',
                   '-lc',
                   '-ldl',
                   '-lm',
@@ -4725,12 +4705,8 @@
                 'cflags': [
                   '-isystem<(android_stlport_include)',
                 ],
-                'conditions': [
-                  ['target_arch=="arm" and arm_thumb==1', {
-                    'ldflags': [ '-L<(android_stlport_libs_dir)/thumb' ]
-                  }, {
-                    'ldflags': [ '-L<(android_stlport_libs_dir)' ]
-                  }],
+                'ldflags': [
+                  '-L<(android_stlport_libs_dir)',
                 ],
               }, { # else: android_webview_build!=0
                 'aosp_build_settings': {
@@ -5734,6 +5710,13 @@
       'make_global_settings': [
         # On Windows, gyp's ninja generator only looks at CC.
         ['CC', '<(make_clang_dir)/bin/clang-cl'],
+      ],
+    }],
+    ['use_lld==1 and OS=="win"', {
+      'make_global_settings': [
+        # Limited to Windows because lld-link is the driver that is compatible
+        # to link.exe.
+        ['LD', '<(make_clang_dir)/bin/lld-link'],
       ],
     }],
     ['OS=="android" and clang==0', {

@@ -120,6 +120,7 @@ LIGHTTPD_RANDOM_PORT_FIRST = 8001
 LIGHTTPD_RANDOM_PORT_LAST = 8999
 TEST_SYNC_SERVER_PORT = 9031
 TEST_SEARCH_BY_IMAGE_SERVER_PORT = 9041
+TEST_POLICY_SERVER_PORT = 9051
 
 # The net test server is started from port 10201.
 # TODO(pliard): http://crbug.com/239014. Remove this dirty workaround once
@@ -187,6 +188,7 @@ PYTHON_UNIT_TEST_SUITES = {
     'path': os.path.join(DIR_SOURCE_ROOT, 'build', 'android'),
     'test_modules': [
       'pylib.device.device_utils_test',
+      'pylib.results.json_results_test',
       'pylib.utils.md5sum_test',
     ]
   },
@@ -200,6 +202,8 @@ PYTHON_UNIT_TEST_SUITES = {
 
 LOCAL_MACHINE_TESTS = ['junit', 'python']
 VALID_ENVIRONMENTS = ['local']
+VALID_TEST_TYPES = ['gtest', 'instrumentation', 'junit', 'linker', 'monkey',
+                    'perf', 'python', 'uiautomator']
 
 
 def GetBuildType():

@@ -43,28 +43,30 @@ class DeviceUtilsTest(unittest.TestCase):
   def testInitWithStr(self):
     serial_as_str = str('0123456789abcdef')
     d = device_utils.DeviceUtils('0123456789abcdef')
-    self.assertEqual(serial_as_str, d.old_interface.GetDevice())
+    self.assertEqual(serial_as_str, d.adb.GetDeviceSerial())
 
   def testInitWithUnicode(self):
     serial_as_unicode = unicode('fedcba9876543210')
     d = device_utils.DeviceUtils(serial_as_unicode)
-    self.assertEqual(serial_as_unicode, d.old_interface.GetDevice())
+    self.assertEqual(serial_as_unicode, d.adb.GetDeviceSerial())
 
   def testInitWithAdbWrapper(self):
     serial = '123456789abcdef0'
     a = adb_wrapper.AdbWrapper(serial)
     d = device_utils.DeviceUtils(a)
-    self.assertEqual(serial, d.old_interface.GetDevice())
+    self.assertEqual(serial, d.adb.GetDeviceSerial())
 
   def testInitWithAndroidCommands(self):
     serial = '0fedcba987654321'
     a = android_commands.AndroidCommands(device=serial)
     d = device_utils.DeviceUtils(a)
-    self.assertEqual(serial, d.old_interface.GetDevice())
+    self.assertEqual(serial, d.adb.GetDeviceSerial())
 
-  def testInitWithNone(self):
-    d = device_utils.DeviceUtils(None)
-    self.assertIsNone(d.old_interface.GetDevice())
+  def testInitWithMissing_fails(self):
+    with self.assertRaises(ValueError):
+      device_utils.DeviceUtils(None)
+    with self.assertRaises(ValueError):
+      device_utils.DeviceUtils('')
 
 
 class MockTempFile(object):
@@ -246,12 +248,12 @@ class DeviceUtilsNewImplTest(mock_calls.TestCase):
     self.adb.GetDeviceSerial.return_value = test_serial
     self.device = device_utils.DeviceUtils(
         self.adb, default_timeout=10, default_retries=0)
-    self.watchMethodCalls(self.call.adb)
+    self.watchMethodCalls(self.call.adb, ignore=['GetDeviceSerial'])
 
   def ShellError(self, output=None, exit_code=1):
     def action(cmd, *args, **kwargs):
-      raise device_errors.AdbShellCommandFailedError(
-          cmd, exit_code, output, str(self.device))
+      raise device_errors.AdbCommandFailedError(
+          cmd, output, exit_code, str(self.device))
     if output is None:
       output = 'Permission denied\n'
     return action
@@ -295,29 +297,25 @@ class DeviceUtilsHasRootTest(DeviceUtilsNewImplTest):
       self.assertFalse(self.device.HasRoot())
 
 
-class DeviceUtilsEnableRootTest(DeviceUtilsOldImplTest):
+class DeviceUtilsEnableRootTest(DeviceUtilsNewImplTest):
 
   def testEnableRoot_succeeds(self):
-    with self.assertCallsSequence([
-        ('adb -s 0123456789abcdef shell getprop ro.build.type',
-         'userdebug\r\n'),
-        ('adb -s 0123456789abcdef root', 'restarting adbd as root\r\n'),
-        ('adb -s 0123456789abcdef wait-for-device', ''),
-        ('adb -s 0123456789abcdef wait-for-device', '')]):
+    with self.assertCalls(
+        (self.call.device.IsUserBuild(), False),
+        self.call.adb.Root(),
+        self.call.adb.WaitForDevice()):
       self.device.EnableRoot()
 
   def testEnableRoot_userBuild(self):
-    with self.assertCallsSequence([
-        ('adb -s 0123456789abcdef shell getprop ro.build.type', 'user\r\n')]):
+    with self.assertCalls(
+        (self.call.device.IsUserBuild(), True)):
       with self.assertRaises(device_errors.CommandFailedError):
         self.device.EnableRoot()
 
   def testEnableRoot_rootFails(self):
-    with self.assertCallsSequence([
-        ('adb -s 0123456789abcdef shell getprop ro.build.type',
-         'userdebug\r\n'),
-        ('adb -s 0123456789abcdef root', 'no\r\n'),
-        ('adb -s 0123456789abcdef wait-for-device', '')]):
+    with self.assertCalls(
+        (self.call.device.IsUserBuild(), False),
+        (self.call.adb.Root(), self.CommandError())):
       with self.assertRaises(device_errors.CommandFailedError):
         self.device.EnableRoot()
 
@@ -675,7 +673,7 @@ class DeviceUtilsRunShellCommandTest(DeviceUtilsNewImplTest):
     cmd = 'ls /root'
     output = 'opendir failed, Permission denied\n'
     with self.assertCall(self.call.adb.Shell(cmd), self.ShellError(output)):
-      with self.assertRaises(device_errors.AdbShellCommandFailedError):
+      with self.assertRaises(device_errors.AdbCommandFailedError):
         self.device.RunShellCommand(cmd, check_return=True)
 
   def testRunShellCommand_checkReturn_disabled(self):
@@ -1084,44 +1082,20 @@ class DeviceUtilsPushChangedFilesZippedTest(DeviceUtilsNewImplTest):
          ('/test/host/path/file2', '/test/device/path/file2')])
 
 
-class DeviceUtilsFileExistsTest(DeviceUtilsOldImplTest):
+class DeviceUtilsFileExistsTest(DeviceUtilsNewImplTest):
 
   def testFileExists_usingTest_fileExists(self):
-    with self.assertCalls(
-        "adb -s 0123456789abcdef shell "
-            "'test -e \"/data/app/test.file.exists\"; echo $?'",
-        '0\r\n'):
-      self.assertTrue(self.device.FileExists('/data/app/test.file.exists'))
+    with self.assertCall(
+        self.call.device.RunShellCommand(
+            ['test', '-e', '/path/file.exists'], check_return=True), ''):
+      self.assertTrue(self.device.FileExists('/path/file.exists'))
 
   def testFileExists_usingTest_fileDoesntExist(self):
-    with self.assertCalls(
-        "adb -s 0123456789abcdef shell "
-            "'test -e \"/data/app/test.file.does.not.exist\"; echo $?'",
-        '1\r\n'):
-      self.assertFalse(self.device.FileExists(
-          '/data/app/test.file.does.not.exist'))
-
-  def testFileExists_usingLs_fileExists(self):
-    with self.assertCallsSequence([
-        ("adb -s 0123456789abcdef shell "
-            "'test -e \"/data/app/test.file.exists\"; echo $?'",
-         'test: not found\r\n'),
-        ("adb -s 0123456789abcdef shell "
-            "'ls \"/data/app/test.file.exists\" >/dev/null 2>&1; echo $?'",
-         '0\r\n')]):
-      self.assertTrue(self.device.FileExists('/data/app/test.file.exists'))
-
-  def testFileExists_usingLs_fileDoesntExist(self):
-    with self.assertCallsSequence([
-        ("adb -s 0123456789abcdef shell "
-            "'test -e \"/data/app/test.file.does.not.exist\"; echo $?'",
-         'test: not found\r\n'),
-        ("adb -s 0123456789abcdef shell "
-            "'ls \"/data/app/test.file.does.not.exist\" "
-            ">/dev/null 2>&1; echo $?'",
-         '1\r\n')]):
-      self.assertFalse(self.device.FileExists(
-          '/data/app/test.file.does.not.exist'))
+    with self.assertCall(
+        self.call.device.RunShellCommand(
+            ['test', '-e', '/does/not/exist'], check_return=True),
+        self.ShellError('', 1)):
+      self.assertFalse(self.device.FileExists('/does/not/exist'))
 
 
 class DeviceUtilsPullFileTest(DeviceUtilsOldImplTest):
@@ -1552,22 +1526,12 @@ class DeviceUtilsGetMemoryUsageForPidTest(DeviceUtilsOldImplTest):
       self.assertEqual({}, self.device.GetMemoryUsageForPid(4321))
 
 
-class DeviceUtilsStrTest(DeviceUtilsOldImplTest):
+class DeviceUtilsStrTest(DeviceUtilsNewImplTest):
 
-  def testStr_noAdbCalls(self):
-    with self.assertNoAdbCalls():
+  def testStr_returnsSerial(self):
+    with self.assertCalls(
+        (self.call.adb.GetDeviceSerial(), '0123456789abcdef')):
       self.assertEqual('0123456789abcdef', str(self.device))
-
-  def testStr_noSerial(self):
-    self.device = device_utils.DeviceUtils(None)
-    with self.assertCalls('adb  get-serialno', '0123456789abcdef'):
-      self.assertEqual('0123456789abcdef', str(self.device))
-
-  def testStr_noSerial_noDevices(self):
-    self.device = device_utils.DeviceUtils(None)
-    with self.assertCalls('adb  get-serialno', 'unknown'), (
-         self.assertRaises(device_errors.NoDevicesError)):
-      str(self.device)
 
 
 if __name__ == '__main__':

@@ -1,10 +1,9 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/mojo.gni")
 
-import(rebase_path("mojo/public/mojo_application.gni", ".", mojo_root))
-import(rebase_path("mojo/public/tools/bindings/mojom.gni", ".", mojo_root))
+import("//mojo/public/mojo_application.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 group("apptest") {
   testonly = true
@@ -27,11 +26,10 @@ mojo_native_application("service") {
 
   deps = [
     ":bindings",
-    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
-    rebase_path("mojo/public/cpp/bindings", ".", mojo_root),
-    rebase_path("mojo/public/cpp/system", ".", mojo_root),
-    rebase_path("mojo/public/cpp/utility", ".", mojo_root),
+    "//mojo/public/cpp/application:standalone",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//mojo/public/cpp/utility",
   ]
 }
 
@@ -46,19 +44,22 @@ mojo_native_application("apptests") {
     "example_client_impl.h",
   ]
 
-   deps = [
+  deps = [
     ":bindings",
-    rebase_path("mojo/public/c/system:for_shared_library", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:standalone", ".", mojo_root),
-    rebase_path("mojo/public/cpp/application:test_support_standalone", ".", mojo_root),
-    rebase_path("mojo/public/cpp/bindings:callback", ".", mojo_root),
-    rebase_path("mojo/public/cpp/environment", ".", mojo_root),
-    rebase_path("mojo/public/cpp/system", ".", mojo_root),
-   ]
+    "//mojo/public/cpp/application:standalone",
+    "//mojo/public/cpp/application:test_support_standalone",
+    "//mojo/public/cpp/bindings:callback",
+    "//mojo/public/cpp/environment",
+    "//mojo/public/cpp/system",
+  ]
 
-   datadeps = [ ":service", ]
+  datadeps = [
+    ":service",
+  ]
 }
 
 mojom("bindings") {
-  sources = [ "example_service.mojom" ]
+  sources = [
+    "example_service.mojom",
+  ]
 }
