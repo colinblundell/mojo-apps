@@ -1,0 +1,20 @@
+diff --git a/mojo/services/html_viewer/BUILD.gn b/mojo/services/html_viewer/BUILD.gn
+index c1298c8..7519622 100644
+--- a/mojo/services/html_viewer/BUILD.gn
++++ b/mojo/services/html_viewer/BUILD.gn
+@@ -60,7 +60,6 @@ source_set("lib") {
+     "//mojo/common",
+     "//mojo/converters/surfaces",
+     "//third_party/mojo/public/c/system:for_shared_library",
+-    "//third_party/mojo/public/cpp/bindings",
+     "//third_party/mojo/public/cpp/utility",
+     "//third_party/mojo/public/interfaces/application",
+     "//mojo/services/network/public/cpp",
+@@ -80,6 +79,7 @@ source_set("lib") {
+   ]
+ 
+   public_deps = [
++    "//third_party/mojo/public/cpp/bindings",
+     "//third_party/WebKit/public:blink",
+   ]
+ }

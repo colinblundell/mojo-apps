@@ -1,0 +1,19 @@
+diff --git a/content/public/browser/BUILD.gn b/content/public/browser/BUILD.gn
+index 8191445..c6d5cd5 100644
+--- a/content/public/browser/BUILD.gn
++++ b/content/public/browser/BUILD.gn
+@@ -46,13 +46,13 @@ source_set("browser_sources") {
+   configs += [ "//content:content_implementation" ]
+ 
+   public_deps = [
++    "//content/public/common:mojo_bindings",
+     # We expose skia headers in the public API.
+     "//skia",
+     "//third_party/mojo/public/cpp/system",
+   ]
+   deps = [
+     "//content/browser",
+-    "//content/public/common:common_sources",
+     "//net",
+     "//ui/accessibility",
+     "//ui/base",
