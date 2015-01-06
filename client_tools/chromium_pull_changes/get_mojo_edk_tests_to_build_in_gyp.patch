@@ -1,0 +1,21 @@
+diff --git a/third_party/mojo/mojo_edk.gyp b/third_party/mojo/mojo_edk.gyp
+index 4a550fb..5240f7a 100644
+--- a/third_party/mojo/mojo_edk.gyp
++++ b/third_party/mojo/mojo_edk.gyp
+@@ -6,6 +6,16 @@
+   'includes': [
+     'mojo_variables.gypi',
+   ],
++  'target_defaults' : {
++    'include_dirs': [
++      '..',
++    ],
++    'direct_dependent_settings': {
++      'include_dirs': [
++        '..',
++      ],
++    },
++  },
+   'targets': [
+     {
+       # GN version: //mojo/edk/system
