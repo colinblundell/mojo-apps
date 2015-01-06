@@ -23,14 +23,14 @@ git apply $SCRIPT_DIR/mojo_public_buildfiles.patch
 # NOTE: The following patch needs to be made in Mojo somehow.
 echo "Applying download_shell_binary patch"
 git apply $SCRIPT_DIR/download_shell_binary.patch
-# NOTE: The following three fixes are in course of being submitted as separate
-# patches.
-echo "Applying chrome_test patch"
-git apply $SCRIPT_DIR/chrome_test.patch
+#echo "Applying chrome_test patch"
+#git apply $SCRIPT_DIR/chrome_test.patch
 echo "Applying content_public_browser patch"
+# NOTE: The following fixe is in course of being submitted as a separate
+# patch.
 git apply $SCRIPT_DIR/content_public_browser.patch
-echo "Applying html_viewer patch"
-git apply $SCRIPT_DIR/html_viewer.patch
+#echo "Applying html_viewer patch"
+#git apply $SCRIPT_DIR/html_viewer.patch
 
 echo "Applying mojom_bindings_generator_explicit patch"
 git apply $SCRIPT_DIR/mojom_bindings_generator_explicit.patch
