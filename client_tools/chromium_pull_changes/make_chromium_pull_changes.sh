@@ -49,6 +49,7 @@ git apply $SCRIPT_DIR/add_landmine.patch
 echo "Applying get_mojo_to_build.patch"
 git apply $SCRIPT_DIR/get_mojo_to_build.patch
 git apply $SCRIPT_DIR/mojo_base_logging_files.patch
+git apply $SCRIPT_DIR/gypfile_changes_for_mojo_public_to_build.patch
 #echo "Applying add_mojo_base_include_dirs.patch"
 #git apply $SCRIPT_DIR/add_mojo_base_include_dirs.patch
 #echo "Applying fix_checkdeps.patch"
