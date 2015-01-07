@@ -8,8 +8,8 @@ index e10850a..7843d5f 100644
      # TODO(vtl): This is kind of ugly. (See TODO in logging.h.)
 -    "../public/cpp/environment/logging.h",
 -    "../public/cpp/environment/lib/logging.cc",
-+    "//third_party/mojo/public/cpp/environment/logging.h",
-+    "//third_party/mojo/public/cpp/environment/lib/logging.cc",
++    "//third_party/mojo/mojo/public/cpp/environment/logging.h",
++    "//third_party/mojo/mojo/public/cpp/environment/lib/logging.cc",
    ]
  
    public_deps = [
@@ -17,7 +17,7 @@ index e10850a..7843d5f 100644
  
    defines = [ "MOJO_ENVIRONMENT_IMPL_IMPLEMENTATION" ]
  
-+  public_configs = [ "//third_party/mojo/public/build/config:mojo_sdk" ]
++  public_configs = [ "//third_party/mojo/mojo/public/build/config:mojo_sdk" ]
 +
    deps = [
      "//base",

@@ -1,0 +1,34 @@
+diff --git a/athena/main/athena_main.gyp b/athena/main/athena_main.gyp
+index 710c5b9..b2cd482 100644
+--- a/athena/main/athena_main.gyp
++++ b/athena/main/athena_main.gyp
+@@ -19,6 +19,7 @@
+         '../../components/components.gyp:omnibox',
+         '../../components/components.gyp:pdf_renderer',
+         '../../components/components.gyp:search_engines',
++        '../../extensions/shell/app_shell.gyp:app_shell_lib',
+         '../../pdf/pdf.gyp:pdf',
+         '../../skia/skia.gyp:skia',
+         '../../ui/app_list/app_list.gyp:app_list',
+diff --git a/extensions/shell/app_shell.gyp b/extensions/shell/app_shell.gyp
+index 6e7e69f..c862ae9 100644
+--- a/extensions/shell/app_shell.gyp
++++ b/extensions/shell/app_shell.gyp
+@@ -24,6 +24,7 @@
+         '<(DEPTH)/components/components.gyp:user_prefs',
+         '<(DEPTH)/components/components.gyp:web_cache_renderer',
+         '<(DEPTH)/content/content.gyp:content',
++        '<(DEPTH)/content/content.gyp:content_browser',
+         '<(DEPTH)/content/content.gyp:content_gpu',
+         '<(DEPTH)/content/content.gyp:content_ppapi_plugin',
+         '<(DEPTH)/content/content_shell_and_tests.gyp:content_shell_lib',
+@@ -45,6 +46,9 @@
+         '<(DEPTH)/third_party/WebKit/public/blink.gyp:blink',
+         '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
+       ],
++      'export_dependent_settings': [
++        '<(DEPTH)/content/content.gyp:content_browser',
++      ],
+       'include_dirs': [
+         '../..',
+         '<(SHARED_INTERMEDIATE_DIR)',

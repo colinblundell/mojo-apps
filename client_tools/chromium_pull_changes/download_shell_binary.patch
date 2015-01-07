@@ -1,13 +1,13 @@
-diff --git a/third_party/mojo/public/tools/download_shell_binary.py b/third_party/mojo/public/tools/download_shell_binary.py
+diff --git a/third_party/mojo/mojo/public/tools/download_shell_binary.py b/third_party/mojo/mojo/public/tools/download_shell_binary.py
 index 2a0890c..f5bce99 100755
---- a/third_party/mojo/public/tools/download_shell_binary.py
-+++ b/third_party/mojo/public/tools/download_shell_binary.py
+--- a/third_party/mojo/mojo/public/tools/download_shell_binary.py
++++ b/third_party/mojo/mojo/public/tools/download_shell_binary.py
 @@ -11,7 +11,7 @@ import tempfile
  import zipfile
  
  current_path = os.path.dirname(os.path.realpath(__file__))
 -sys.path.insert(0, os.path.join(current_path, "..", "..", "..", "tools"))
-+sys.path.insert(0, os.path.join(current_path, "..", "..", "..", "..", "tools"))
++sys.path.insert(0, os.path.join(current_path, "..", "..", "..", "..", "..", "tools"))
  # pylint: disable=F0401
  import find_depot_tools
  

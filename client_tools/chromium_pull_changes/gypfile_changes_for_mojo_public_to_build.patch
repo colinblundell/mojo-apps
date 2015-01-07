@@ -1,7 +1,7 @@
-diff --git a/third_party/mojo/mojo_public.gyp b/third_party/mojo/mojo_public.gyp
+diff --git a/third_party/mojo/mojo/mojo_public.gyp b/third_party/mojo/mojo/mojo_public.gyp
 index 4c61670..bc4643e 100644
---- a/third_party/mojo/mojo_public.gyp
-+++ b/third_party/mojo/mojo_public.gyp
+--- a/third_party/mojo/mojo/mojo_public.gyp
++++ b/third_party/mojo/mojo/mojo_public.gyp
 @@ -6,6 +6,16 @@
    'includes': [
      'mojo_variables.gypi',
@@ -24,27 +24,27 @@ index 4c61670..bc4643e 100644
          'MOJO_SYSTEM_IMPLEMENTATION',
        ],
 -      'include_dirs': [
--        '../..',
+-        '../../..',
 -      ],
 -      'direct_dependent_settings': {
 -        'include_dirs': [
--          '../..',
+-          '../../..',
 -        ],
 -      },
        'all_dependent_settings': {
          'conditions': [
            # We need to be able to call the MojoSetSystemThunks() function in
-diff --git a/third_party/mojo/mojom_bindings_generator.gypi b/third_party/mojo/mojom_bindings_generator.gypi
+diff --git a/third_party/mojo/mojo/mojom_bindings_generator.gypi b/third_party/mojo/mojo/mojom_bindings_generator.gypi
 index 4064df6..b2a325f 100644
---- a/third_party/mojo/mojom_bindings_generator.gypi
-+++ b/third_party/mojo/mojom_bindings_generator.gypi
+--- a/third_party/mojo/mojo/mojom_bindings_generator.gypi
++++ b/third_party/mojo/mojo/mojom_bindings_generator.gypi
 @@ -15,7 +15,8 @@
              '<!(python <(DEPTH)/build/inverse_depth.py <(DEPTH))',
          'java_out_dir': '<(PRODUCT_DIR)/java_mojo/<(_target_name)/src',
          'mojom_import_args%': [
 -         '-I<(DEPTH)'
 +         '-I<(DEPTH)',
-+         '-I<(DEPTH)/third_party'
++         '-I<(DEPTH)/third_party/mojo'
          ],
        },
        'inputs': [
@@ -52,30 +52,30 @@ index 4064df6..b2a325f 100644
    ],
    'include_dirs': [
      '<(DEPTH)',
-+    '<(DEPTH)/third_party',
++    '<(DEPTH)/third_party/mojo',
      '<(SHARED_INTERMEDIATE_DIR)',
-+    '<(SHARED_INTERMEDIATE_DIR)/third_party',
++    '<(SHARED_INTERMEDIATE_DIR)/third_party/mojo',
    ],
    'direct_dependent_settings': {
      'include_dirs': [
        '<(DEPTH)',
-+      '<(DEPTH)/third_party',
++      '<(DEPTH)/third_party/mojo',
        '<(SHARED_INTERMEDIATE_DIR)',
-+      '<(SHARED_INTERMEDIATE_DIR)/third_party',
++      '<(SHARED_INTERMEDIATE_DIR)/third_party/mojo',
      ],
      'variables': {
        'generated_src_dirs': [
-diff --git a/third_party/mojo/mojom_bindings_generator_explicit.gypi b/third_party/mojo/mojom_bindings_generator_explicit.gypi
+diff --git a/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi b/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
 index 3f66144..570c97f 100644
---- a/third_party/mojo/mojom_bindings_generator_explicit.gypi
-+++ b/third_party/mojo/mojom_bindings_generator_explicit.gypi
+--- a/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
++++ b/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
 @@ -23,7 +23,8 @@
        'variables': {
          'java_out_dir': '<(PRODUCT_DIR)/java_mojo/<(_target_name)/src',
          'mojom_import_args%': [
 -         '-I<(DEPTH)'
 +         '-I<(DEPTH)',
-+         '-I<(DEPTH)/third_party'
++         '-I<(DEPTH)/third_party/mojo'
          ],
        },
        'inputs': [
@@ -83,9 +83,9 @@ index 3f66144..570c97f 100644
      # Include paths needed to compile the generated sources into a library.
      'include_dirs': [
        '<(DEPTH)',
-+      '<(DEPTH)/third_party',
++      '<(DEPTH)/third_party/mojo',
        '<(SHARED_INTERMEDIATE_DIR)',
-+      '<(SHARED_INTERMEDIATE_DIR)/third_party',
++      '<(SHARED_INTERMEDIATE_DIR)/third_party/mojo',
      ],
      # Make sure the generated header files are available for any static library
      # that depends on a static library that depends on this generator.
@@ -93,9 +93,9 @@ index 3f66144..570c97f 100644
        # transitive dependancies when using the library.
        'include_dirs': [
          '<(DEPTH)',
-+        '<(DEPTH)/third_party',
++        '<(DEPTH)/third_party/mojo',
          '<(SHARED_INTERMEDIATE_DIR)',
-+        '<(SHARED_INTERMEDIATE_DIR)/third_party',
++        '<(SHARED_INTERMEDIATE_DIR)/third_party/mojo',
        ],
        'variables': {
          'generated_src_dirs': [
