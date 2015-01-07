@@ -24,7 +24,7 @@
 [r"'mojo_variables.gypi", r"'../third_party/mojo/mojo/mojo_variables.gypi", ["mojo/*gyp"]],
 [r"'(mojom_bindings_generator.gypi)", r"'../third_party/mojo/mojo/\1", ["mojo/*gyp"]],
 # Changing references to ".." to "../.." in the Mojo gypfiles.
-[r"\.\.", r"../../..", ["third_party/mojo/mojo/*gyp"]],
+[r"\.\.", r"../..", ["third_party/mojo/mojo/*gyp"]],
 #[r"'services/public/mojo_services_public.gyp", r"'../third_party/mojo/services/public/mojo_services_public.gyp", ["*gyp"]],
 #[r"<\(DEPTH\)/mojo/services/public", r"<(DEPTH)/third_party/mojo/services/public", ["*gyp", "*.gypi"]],
 # Changing references to download_shell_binary.py.

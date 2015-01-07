@@ -10,14 +10,14 @@ mkdir -p third_party/mojo/mojo
 #mkdir -p third_party/mojo/services
 git mv mojo/public third_party/mojo/mojo/public
 git mv mojo/edk third_party/mojo/mojo/edk
-git mv mojo/mojo_public.gyp third_party/mojo/mojo
-git mv mojo/mojo_edk.gyp third_party/mojo/mojo
-git mv mojo/mojo_edk_system_impl.gypi third_party/mojo/mojo
-git mv mojo/mojo_edk_tests.gyp third_party/mojo/mojo
-git mv mojo/mojo_variables.gypi third_party/mojo/mojo
-git mv mojo/mojom_bindings_generator.gypi third_party/mojo/mojo
-git mv mojo/mojom_bindings_generator_explicit.gypi third_party/mojo/mojo
-git mv mojo/mojom_bindings_generator_variables.gypi third_party/mojo/mojo
+git mv mojo/mojo_public.gyp third_party/mojo
+git mv mojo/mojo_edk.gyp third_party/mojo
+git mv mojo/mojo_edk_system_impl.gypi third_party/mojo
+git mv mojo/mojo_edk_tests.gyp third_party/mojo
+git mv mojo/mojo_variables.gypi third_party/mojo
+git mv mojo/mojom_bindings_generator.gypi third_party/mojo
+git mv mojo/mojom_bindings_generator_explicit.gypi third_party/mojo
+git mv mojo/mojom_bindings_generator_variables.gypi third_party/mojo
 #git mv mojo/services/public third_party/mojo/services/public
 #echo "Applying mojo_gni.patch"
 #git apply $SCRIPT_DIR/mojo_gni.patch

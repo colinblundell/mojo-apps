@@ -1,18 +1,18 @@
-diff --git a/third_party/mojo/mojo/mojo_public.gyp b/third_party/mojo/mojo/mojo_public.gyp
+diff --git a/third_party/mojo/mojo_public.gyp b/third_party/mojo/mojo_public.gyp
 index 4c61670..bc4643e 100644
---- a/third_party/mojo/mojo/mojo_public.gyp
-+++ b/third_party/mojo/mojo/mojo_public.gyp
+--- a/third_party/mojo/mojo_public.gyp
++++ b/third_party/mojo/mojo_public.gyp
 @@ -6,6 +6,16 @@
    'includes': [
      'mojo_variables.gypi',
    ],
 +  'target_defaults' : {
 +    'include_dirs': [
-+      '..',
++      '.',
 +    ],
 +    'direct_dependent_settings': {
 +      'include_dirs': [
-+        '..',
++        '.',
 +      ],
 +    },
 +  },
@@ -24,20 +24,20 @@ index 4c61670..bc4643e 100644
          'MOJO_SYSTEM_IMPLEMENTATION',
        ],
 -      'include_dirs': [
--        '../../..',
+-        '../..',
 -      ],
 -      'direct_dependent_settings': {
 -        'include_dirs': [
--          '../../..',
+-          '../..',
 -        ],
 -      },
        'all_dependent_settings': {
          'conditions': [
            # We need to be able to call the MojoSetSystemThunks() function in
-diff --git a/third_party/mojo/mojo/mojom_bindings_generator.gypi b/third_party/mojo/mojo/mojom_bindings_generator.gypi
+diff --git a/third_party/mojo/mojom_bindings_generator.gypi b/third_party/mojo/mojom_bindings_generator.gypi
 index 4064df6..b2a325f 100644
---- a/third_party/mojo/mojo/mojom_bindings_generator.gypi
-+++ b/third_party/mojo/mojo/mojom_bindings_generator.gypi
+--- a/third_party/mojo/mojom_bindings_generator.gypi
++++ b/third_party/mojo/mojom_bindings_generator.gypi
 @@ -15,7 +15,8 @@
              '<!(python <(DEPTH)/build/inverse_depth.py <(DEPTH))',
          'java_out_dir': '<(PRODUCT_DIR)/java_mojo/<(_target_name)/src',
@@ -65,10 +65,10 @@ index 4064df6..b2a325f 100644
      ],
      'variables': {
        'generated_src_dirs': [
-diff --git a/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi b/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
+diff --git a/third_party/mojo/mojom_bindings_generator_explicit.gypi b/third_party/mojo/mojom_bindings_generator_explicit.gypi
 index 3f66144..570c97f 100644
---- a/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
-+++ b/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
+--- a/third_party/mojo/mojom_bindings_generator_explicit.gypi
++++ b/third_party/mojo/mojom_bindings_generator_explicit.gypi
 @@ -23,7 +23,8 @@
        'variables': {
          'java_out_dir': '<(PRODUCT_DIR)/java_mojo/<(_target_name)/src',
