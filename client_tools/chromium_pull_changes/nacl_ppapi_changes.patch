@@ -7,7 +7,7 @@ index 4007454..d79389e 100644
              '<(monacl_codegen_dir)/mojo_syscall.cc',
            ],
 +          'dependencies': [
-+            'mojo_public.gyp:mojo_system_placeholder',
++            '../third_party/mojo/mojo/mojo_public.gyp:mojo_system_placeholder',
 +          ],
          },
          {
@@ -17,7 +17,7 @@ index 4007454..d79389e 100644
              '<(monacl_codegen_dir)/mojo_syscall.cc',
            ],
 +          'dependencies': [
-+            'mojo_public.gyp:mojo_system_placeholder',
++            '../third_party/mojo/mojo/mojo_public.gyp:mojo_system_placeholder',
 +          ],
            'configurations': {
              'Common_Base': {
@@ -30,7 +30,7 @@ index 4e7aab8..0cb4948 100644
            ],
            'dependencies': [
              'mojo_nacl.gyp:monacl_codegen',
-+            'mojo_public.gyp:mojo_system_placeholder',
++            '../third_party/mojo/mojo/mojo_public.gyp:mojo_system_placeholder',
            ],
          },
          {
@@ -42,7 +42,7 @@ index a7ec351..63a3e3a 100644
        'dependencies': [
          '../mojo/mojo_nacl_untrusted.gyp:libmojo',
          '../mojo/mojo_nacl.gyp:monacl_codegen',
-+        '../mojo/mojo_public.gyp:mojo_system_placeholder',
++        '../third_party/mojo/mojo/mojo_public.gyp:mojo_system_placeholder',
          '../native_client/src/untrusted/nacl/nacl.gyp:imc_syscalls_lib',
          'native_client/native_client.gyp:ppapi_lib',
          'ppapi_nacl.gyp:ppapi_cpp_lib',
