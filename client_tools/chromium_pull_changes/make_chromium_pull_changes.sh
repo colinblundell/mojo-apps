@@ -6,10 +6,10 @@ CHROMIUM_SRC_DIR=$1
 cd $CHROMIUM_SRC_DIR
 echo "Moving code from Mojo public repo to live under //third_party/mojo"
 rm -rf third_party/mojo
-mkdir -p third_party/mojo/mojo
+mkdir -p third_party/mojo/src/mojo
 #mkdir -p third_party/mojo/services
-git mv mojo/public third_party/mojo/mojo/public
-git mv mojo/edk third_party/mojo/mojo/edk
+git mv mojo/public third_party/mojo/src/mojo/public
+git mv mojo/edk third_party/mojo/src/mojo/edk
 git mv mojo/mojo_public.gyp third_party/mojo
 git mv mojo/mojo_edk.gyp third_party/mojo
 git mv mojo/mojo_edk_system_impl.gypi third_party/mojo

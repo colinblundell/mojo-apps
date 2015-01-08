@@ -8,8 +8,8 @@ index cb7a026..1d8505f 100644
          # TODO(vtl): This is kind of ugly. (See TODO in logging.h.)
 -        "public/cpp/environment/logging.h",
 -        "public/cpp/environment/lib/logging.cc",
-+        "../third_party/mojo/mojo/public/cpp/environment/logging.h",
-+        "../third_party/mojo/mojo/public/cpp/environment/lib/logging.cc",
++        "../third_party/mojo/src/mojo/public/cpp/environment/logging.h",
++        "../third_party/mojo/src/mojo/public/cpp/environment/lib/logging.cc",
        ],
        'include_dirs': [
          '..',

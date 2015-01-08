@@ -1,13 +1,13 @@
-diff --git a/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi b/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
+diff --git a/third_party/mojo/src/mojo/mojom_bindings_generator_explicit.gypi b/third_party/mojo/src/mojo/mojom_bindings_generator_explicit.gypi
 index 0b836db..3f66144 100644
---- a/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
-+++ b/third_party/mojo/mojo/mojom_bindings_generator_explicit.gypi
+--- a/third_party/mojo/src/mojo/mojom_bindings_generator_explicit.gypi
++++ b/third_party/mojo/src/mojo/mojom_bindings_generator_explicit.gypi
 @@ -10,7 +10,7 @@
      'mojom_base_output_dir':
          '<!(python <(DEPTH)/build/inverse_depth.py <(DEPTH))',
      'mojom_generated_outputs': [
 -      '<!@(python <(DEPTH)/mojo/public/tools/bindings/mojom_list_outputs.py --basedir <(mojom_base_output_dir) <@(mojom_files))',
-+      '<!@(python <(DEPTH)/third_party/mojo/mojo/public/tools/bindings/mojom_list_outputs.py --basedir <(mojom_base_output_dir) <@(mojom_files))',
++      '<!@(python <(DEPTH)/third_party/mojo/src/mojo/public/tools/bindings/mojom_list_outputs.py --basedir <(mojom_base_output_dir) <@(mojom_files))',
      ],
    },
    # Given mojom files as inputs, generate sources.  These sources will be

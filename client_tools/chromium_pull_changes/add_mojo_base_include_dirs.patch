@@ -6,11 +6,11 @@ index f18649d..b6cce6d 100644
        ],
        'include_dirs': [
          '..',
-+        '../third_party/mojo',
++        '../third_party/mojo/src',
        ],
 +      'direct_dependent_settings': {
 +        'include_dirs': [
-+          '../third_party/mojo',
++          '../third_party/mojo/src',
 +        ],
 +      },
        'export_dependent_settings': [
@@ -20,11 +20,11 @@ index f18649d..b6cce6d 100644
        ],
        'include_dirs': [
          '..',
-+        '../third_party/mojo',
++        '../third_party/mojo/src',
        ],
 +      'direct_dependent_settings': {
 +        'include_dirs': [
-+          '../third_party/mojo',
++          '../third_party/mojo/src',
 +        ],
 +      },
      },

@@ -8,11 +8,11 @@ index 4a550fb..5240f7a 100644
    ],
 +  'target_defaults' : {
 +    'include_dirs': [
-+      '.',
++      'src',
 +    ],
 +    'direct_dependent_settings': {
 +      'include_dirs': [
-+        '.',
++        'src',
 +      ],
 +    },
 +  },

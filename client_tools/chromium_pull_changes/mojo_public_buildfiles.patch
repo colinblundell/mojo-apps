@@ -1,7 +1,7 @@
-diff --git a/third_party/mojo/mojo/public/c/test_support/BUILD.gn b/third_party/mojo/mojo/public/c/test_support/BUILD.gn
+diff --git a/third_party/mojo/src/mojo/public/c/test_support/BUILD.gn b/third_party/mojo/src/mojo/public/c/test_support/BUILD.gn
 index 3b11a60..091be0a 100644
---- a/third_party/mojo/mojo/public/c/test_support/BUILD.gn
-+++ b/third_party/mojo/mojo/public/c/test_support/BUILD.gn
+--- a/third_party/mojo/src/mojo/public/c/test_support/BUILD.gn
++++ b/third_party/mojo/src/mojo/public/c/test_support/BUILD.gn
 @@ -2,12 +2,15 @@
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
@@ -18,10 +18,10 @@ index 3b11a60..091be0a 100644
    sources = [
      "test_support.h",
      "test_support_export.h",
-diff --git a/third_party/mojo/mojo/public/js/BUILD.gn b/third_party/mojo/mojo/public/js/BUILD.gn
+diff --git a/third_party/mojo/src/mojo/public/js/BUILD.gn b/third_party/mojo/src/mojo/public/js/BUILD.gn
 index 4b86e6eb..1cb1a60 100644
---- a/third_party/mojo/mojo/public/js/BUILD.gn
-+++ b/third_party/mojo/mojo/public/js/BUILD.gn
+--- a/third_party/mojo/src/mojo/public/js/BUILD.gn
++++ b/third_party/mojo/src/mojo/public/js/BUILD.gn
 @@ -2,7 +2,9 @@
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.

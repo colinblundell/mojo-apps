@@ -9,7 +9,7 @@ index 8191445..c6d5cd5 100644
 +    "//content/public/common:mojo_bindings",
      # We expose skia headers in the public API.
      "//skia",
-     "//third_party/mojo/mojo/public/cpp/system",
+     "//third_party/mojo/src/mojo/public/cpp/system",
    ]
    deps = [
      "//content/browser",

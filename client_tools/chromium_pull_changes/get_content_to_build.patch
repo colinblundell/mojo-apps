@@ -7,7 +7,7 @@ index 873b116..8364e46 100644
                          ".", "//content")
  
 +  public_deps = [
-+    "//third_party/mojo/mojo/public/cpp/bindings",
++    "//third_party/mojo/src/mojo/public/cpp/bindings",
 +  ]
 +
    deps = [
@@ -22,7 +22,7 @@ index 0c43e53..b932638 100644
      "//base",
      "//content:export",
 +    "//content/public/child",
-     "//third_party/mojo/mojo/public/interfaces/application",
+     "//third_party/mojo/src/mojo/public/interfaces/application",
      "//skia",
      "//ui/gl",
 diff --git a/content/public/browser/BUILD.gn b/content/public/browser/BUILD.gn
@@ -33,7 +33,7 @@ index 39bddc4..255261b 100644
    public_deps = [
      # We expose skia headers in the public API.
      "//skia",
-+    "//third_party/mojo/mojo/public/cpp/system",
++    "//third_party/mojo/src/mojo/public/cpp/system",
    ]
    deps = [
      "//content/browser",
@@ -62,7 +62,7 @@ index aa664241..cc85068 100644
  
    public_deps = [
      "//content/common",
-+    "//third_party/mojo/mojo/public/cpp/bindings",
++    "//third_party/mojo/src/mojo/public/cpp/bindings",
    ]
    deps = [
      "//net",
