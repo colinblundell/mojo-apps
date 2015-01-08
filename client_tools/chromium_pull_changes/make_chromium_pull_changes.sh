@@ -45,6 +45,8 @@ git apply $SCRIPT_DIR/athena_deps.patch
 echo "Applying add_landmine.patch"
 git apply $SCRIPT_DIR/add_landmine.patch
 git apply $SCRIPT_DIR/add_license.patch
+git add third_party/mojo/LICENSE
+git add third_party/mojo/README.chromium
 #echo "Applying gypfile_references_to_logging_files.patch"
 #git apply $SCRIPT_DIR/gypfile_references_to_logging_files.patch
 echo "Applying get_mojo_to_build.patch"
