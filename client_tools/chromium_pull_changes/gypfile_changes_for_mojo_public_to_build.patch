@@ -19,7 +19,7 @@ index 4c61670..bc4643e 100644
    'targets': [
      {
        'target_name': 'mojo_public',
-@@ -29,14 +39,6 @@
+@@ -33,14 +43,6 @@
        'defines': [
          'MOJO_SYSTEM_IMPLEMENTATION',
        ],
