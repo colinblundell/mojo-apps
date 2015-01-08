@@ -70,6 +70,12 @@ git apply $SCRIPT_DIR/add_mojo_base_include_dirs.patch
 #git add build/config/mojo.gni
 echo "Committing changes"
 git commit -am "Changes from make_chromium_pull_changes.sh" > /dev/null
+
+echo "Reordering references in buildfiles"
+changed_files = `git diff --name-only HEAD~1`
+for f in changed_files; do
+  ~/mojo_apps/client_tools/chromium_pull_changes/reorder_references_in_buildfiles.py $f
+done
 #echo "Updating Mojo pull"
 #cd $MOJO_SRC_DIR
 #./mojo/tools/roll/rev_sdk.py $CHROMIUM_SRC_DIR
