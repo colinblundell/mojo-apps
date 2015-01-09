@@ -1,6 +1,5 @@
 #!/bin/bash
 SCRIPT_DIR="$(realpath $(dirname "${BASH_SOURCE[0]}"))"
-#MOJO_SRC_DIR=$1
 CHROMIUM_SRC_DIR=$1
 
 cd $CHROMIUM_SRC_DIR
@@ -24,14 +23,17 @@ git mv mojo/mojom_bindings_generator_variables.gypi third_party/mojo
 $CHROMIUM_SRC_DIR/tools/git/mffr.py -fi $SCRIPT_DIR/search_and_replace_changes.py
 # NOTE: The following two fixes have been made Mojo-side and can be eliminated
 # once Mojo is rolled into Chromium again.
-echo "Applying edk_js_test patch"
-git apply $SCRIPT_DIR/edk_js_test.patch
-echo "Applying mojo_public_buildfiles patch"
-git apply $SCRIPT_DIR/mojo_public_buildfiles.patch
+#echo "Applying edk_js_test patch"
+#git apply $SCRIPT_DIR/edk_js_test.patch
+#echo "Applying mojo_public_buildfiles patch"
+#git apply $SCRIPT_DIR/mojo_public_buildfiles.patch
 # NOTE: The following patch needs to land in Mojo and then get rolled into
 # Chromium.
-echo "Applying download_shell_binary patch"
-git apply $SCRIPT_DIR/download_shell_binary.patch
+# UPDATE: Currently I've commented out the application of this patch because I
+# did an experiment where I rolled in a version of the Mojo code that had this
+# patch applied.
+#echo "Applying download_shell_binary patch"
+#git apply $SCRIPT_DIR/download_shell_binary.patch
 
 #echo "Applying chrome_test patch"
 #git apply $SCRIPT_DIR/chrome_test.patch
@@ -64,6 +66,10 @@ echo "Applying get_mojo_edk_tests_to_build_in_gyp.patch"
 git apply $SCRIPT_DIR/get_mojo_edk_tests_to_build_in_gyp.patch
 echo "Applying add_mojo_base_include_dirs.patch"
 git apply $SCRIPT_DIR/add_mojo_base_include_dirs.patch
+echo "Applying change_mojo_sdk_root_gni.patch"
+git apply $SCRIPT_DIR/change_mojo_sdk_root_gni.patch
+echo "Applying change_download_mojo_shell.patch"
+git apply $SCRIPT_DIR/change_download_mojo_shell.patch
 #echo "Applying fix_checkdeps.patch"
 #git apply $SCRIPT_DIR/fix_checkdeps.patch
 #echo "Adding build/config/mojo.gni"
@@ -72,11 +78,9 @@ echo "Committing changes"
 git commit -am "Changes from make_chromium_pull_changes.sh" > /dev/null
 
 echo "Reordering references in buildfiles"
-changed_files = `git diff --name-only HEAD~1`
-for f in changed_files; do
+for f in `git diff --name-only HEAD~1`; do
   ~/mojo_apps/client_tools/chromium_pull_changes/reorder_references_in_buildfiles.py $f
 done
-git commit -am "make_chromium_pull_changes.sh: Reordered references in buildfiles" > /dev/null
-#echo "Updating Mojo pull"
-#cd $MOJO_SRC_DIR
-#./mojo/tools/roll/rev_sdk.py $CHROMIUM_SRC_DIR
+git commit -am "make_chromium_pull_changes.sh: Reordered references in buildfiles"
+echo "Updating Mojo pull"
+~/mojo/src/mojo/tools/roll/rev_sdk.py $CHROMIUM_SRC_DIR

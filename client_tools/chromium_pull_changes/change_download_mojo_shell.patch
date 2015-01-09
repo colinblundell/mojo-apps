@@ -1,0 +1,14 @@
+diff --git a/tools/download_mojo_shell.py b/tools/download_mojo_shell.py
+index 5124e93..71f4710 100755
+--- a/tools/download_mojo_shell.py
++++ b/tools/download_mojo_shell.py
+@@ -8,7 +8,8 @@ import os
+ import sys
+ 
+ current_path = os.path.dirname(os.path.realpath(__file__))
+-sys.path.insert(0, os.path.join(current_path, "..", "mojo", "public", "tools"))
++sys.path.insert(0, os.path.join(current_path, "..", "third_party", "mojo",
++                                "src", "mojo", "public", "tools"))
+ # pylint: disable=F0401
+ import find_depot_tools
+ import download_shell_binary
