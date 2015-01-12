@@ -15,18 +15,17 @@ sdk_dirs_to_clone = [
 services_dirs_to_clone = [
   # Public services.
   "mojo/services/public",
-  "mojo/services/build/config",
+  #"mojo/services/build/config",
 ]
 
 client_dirs_to_clone = [
   # Client apps.
-  "examples/apptest",
+  #"examples/apptest",
   "examples/echo",
-  "examples/sample_app",
+  #"examples/sample_app",
 
   # Dependencies of client apps.
 #  "base",
-  "build",
 #  "crypto",
 #  "gin",
 #  "gpu",
@@ -34,14 +33,15 @@ client_dirs_to_clone = [
 #  "sdch",
 #  "skia",
   # NOTE: Contains dependencies of the Mojo SDK as well.
-  "testing",
+#  "testing",
   # NOTE: Contains dependencies of the Mojo SDK as well.
-  "third_party",
+#  "third_party",
 #  "ui",
 #  "url",
 #  "v8",
 
   # Support for a gn/ninja client build.
+  "build",
   "tools",
 ]
 
@@ -68,9 +68,6 @@ def rev(source_dir, target_dir, dirs_to_clone):
   for input_dir in dirs_to_clone:
     output_dir = input_dir 
 
-    # Strip any "mojo/" prefixes to avoid stutter.
-    if output_dir.startswith("mojo/"):
-      output_dir = output_dir[len("mojo/"):]
     # Strip any "services/" prefixes to avoid stutter.
     if output_dir.startswith("services/"):
       output_dir = output_dir[len("services/"):]
@@ -114,16 +111,10 @@ if len(sys.argv) != 3:
 current_path = os.path.dirname(os.path.realpath(__file__))
 root_path = os.path.join(current_path, "..")
 
-# Evaluate mojo.gni to obtain mojo_root.
-mojo_gni_file = os.path.join(root_path, "build/config/mojo.gni")
-execfile(mojo_gni_file)
-
-assert(mojo_root.startswith("//"))
-mojo_root = mojo_root[2:]
-mojo_sdk_dir = os.path.join(root_path, mojo_root, "mojo")
-assert(mojo_services_root.startswith("//"))
-mojo_services_root = mojo_services_root[2:]
-mojo_services_dir = os.path.join(root_path, mojo_services_root, "services")
+mojo_sdk_dir = os.path.join(root_path, "third_party", "mojo", "src")
+#assert(mojo_services_root.startswith("//"))
+#mojo_services_root = mojo_services_root[2:]
+#mojo_services_dir = os.path.join(root_path, mojo_services_root, "services")
 
 mojo_repo_dir = sys.argv[1]
 chromium_repo_dir = sys.argv[2]
@@ -131,7 +122,7 @@ chromium_repo_dir = sys.argv[2]
 # Rev the SDK and shell.
 client_tools_path = os.path.join(root_path, "client_tools")
 rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
-#system([os.path.join(client_tools_path, "download_mojo_shell.py")])
+system([os.path.join(client_tools_path, "download_mojo_shell.py")])
 
 # Rev services.
 #rev(mojo_repo_dir, mojo_services_dir, services_dirs_to_clone)
@@ -140,14 +131,14 @@ rev(mojo_repo_dir, mojo_sdk_dir, sdk_dirs_to_clone)
 #system([os.path.join(mojo_sdk_dir, "build/install-build-deps.sh")])
 
 # Rev client apps.
-system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
-rev(mojo_repo_dir, root_path, client_dirs_to_clone)
-system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
-commit("Restore mojo.gni")
+#system(["cp", os.path.join(root_path, "build/config/mojo.gni"), root_path])
+#rev(mojo_repo_dir, root_path, client_dirs_to_clone)
+#system(["mv", os.path.join(root_path, "mojo.gni"), os.path.join(root_path, "build/config")])
+#commit("Restore mojo.gni")
 
 # Copy in dirs of client apps that aren't tracked in git.
-copy(mojo_repo_dir, root_path, client_dirs_to_copy)
+#copy(mojo_repo_dir, root_path, client_dirs_to_copy)
 
 # Update buildfiles of client apps.
-system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-fi", "change_buildfiles.py"])
-commit("Update BUILD.gn files of client apps")
+#system([os.path.join(chromium_repo_dir, "tools/git/mffr.py"), "-fi", "change_buildfiles.py"])
+#commit("Update BUILD.gn files of client apps")
