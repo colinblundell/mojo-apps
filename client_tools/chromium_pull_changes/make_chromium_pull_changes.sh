@@ -70,6 +70,8 @@ echo "Applying change_mojo_sdk_root_gni.patch"
 git apply $SCRIPT_DIR/change_mojo_sdk_root_gni.patch
 echo "Applying change_download_mojo_shell.patch"
 git apply $SCRIPT_DIR/change_download_mojo_shell.patch
+echo "Applying mojo_services_public_gypfile.patch"
+git apply $SCRIPT_DIR/mojo_services_public_gypfile.patch
 #echo "Applying fix_checkdeps.patch"
 #git apply $SCRIPT_DIR/fix_checkdeps.patch
 #echo "Adding build/config/mojo.gni"
@@ -82,5 +84,5 @@ for f in `git diff --name-only HEAD~1`; do
   ~/mojo_apps/client_tools/chromium_pull_changes/reorder_references_in_buildfiles.py $f
 done
 git commit -am "make_chromium_pull_changes.sh: Reordered references in buildfiles"
-echo "Updating Mojo pull"
+echo "Redoing Mojo pull as a check against inserting Mojo-side changes"
 ~/mojo/src/mojo/tools/roll/rev_sdk.py $CHROMIUM_SRC_DIR
