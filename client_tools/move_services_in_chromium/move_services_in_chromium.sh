@@ -30,8 +30,8 @@ echo "Applying add_license"
 git apply $SCRIPT_DIR/add_license.patch
 git add third_party/mojo_services/LICENSE
 git add third_party/mojo_services/README.chromium
-echo "Applying make_owners_files_changes"
-git apply $SCRIPT_DIR/make_owners_files_changes.patch
+echo "Applying make_owners_file_changes"
+git apply $SCRIPT_DIR/make_owners_file_changes.patch
 git add third_party/mojo_services/OWNERS
 
 git commit -am "move_services_in_chromium.sh: Functional changes" > /dev/null
