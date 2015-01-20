@@ -22,11 +22,18 @@ git mv mojo/services/network/public third_party/mojo_services/src/network/public
 # it here.
 
 echo "Applying fix_checkdeps"
-git apply fix_checkdeps.patch
+git apply $SCRIPT_DIR/fix_checkdeps.patch
+echo "Applying add_license"
+git apply $SCRIPT_DIR/add_license.patch
+git add third_party/mojo_services/LICENSE
+git add third_party/mojo_services/README.chromium
 
-echo "Committing changes"
-git commit -am "Changes from move_services_in_chromium.sh" > /dev/null
+echo "Committing main set of changes"
+git commit -am "First set of from move_services_in_chromium.sh" > /dev/null
 
+echo "Cosmetic change: Sorting headers"
+./tools/git/for-all-touched-files.py -c "tools/sort-headers.py --force [[FILENAME]]" > /dev/null
+git commit -am "Sort headers" > /dev/null
 # TODO(blundell): Re-add this in.
 #echo "Reordering references in buildfiles"
 #for f in `git diff --name-only HEAD~1`; do
