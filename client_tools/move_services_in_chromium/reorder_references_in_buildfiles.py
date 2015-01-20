@@ -33,7 +33,7 @@ def main():
         within_list = False
         at_end_of_list = True
 
-      if within_list and code.find("third_party/mojo") != -1:
+      if within_list and code.find("third_party/mojo_services") != -1:
         mojo_references.append(code)
       else:
         if (len(mojo_references) and

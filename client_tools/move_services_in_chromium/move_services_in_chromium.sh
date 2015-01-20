@@ -16,6 +16,9 @@ done
 mkdir third_party/mojo_services/src/network
 git mv mojo/services/network/public third_party/mojo_services/src/network/public
 
+git commit -am "move_services_in_chromium.sh: Move Mojo services code"
+commit_after_code_move=`git rev-parse HEAD`
+
 ./tools/git/mffr.py -fi $SCRIPT_DIR/search_and_replace_changes.py
 
 # TODO(blundell): Create patch that adds README.chromium and LICENSE and apply
@@ -28,17 +31,20 @@ git apply $SCRIPT_DIR/add_license.patch
 git add third_party/mojo_services/LICENSE
 git add third_party/mojo_services/README.chromium
 
-echo "Committing main set of changes"
-git commit -am "First set of from move_services_in_chromium.sh" > /dev/null
+git commit -am "move_services_in_chromium.sh: Functional changes" > /dev/null
 
-echo "Cosmetic change: Sorting headers"
+echo "Sorting headers"
 ./tools/git/for-all-touched-files.py -c "tools/sort-headers.py --force [[FILENAME]]" > /dev/null
-git commit -am "Sort headers" > /dev/null
-# TODO(blundell): Re-add this in.
-#echo "Reordering references in buildfiles"
-#for f in `git diff --name-only HEAD~1`; do
-#  ~/mojo_apps/client_tools/chromium_pull_changes/reorder_references_in_buildfiles.py $f
-#done
-#git commit -am "move_services_in_chromium.sh: Reordered references in buildfiles"
+git commit -am "move_services_in_chromium.sh: Sort headers" > /dev/null
+
+echo "Reordering references in buildfiles"
+for f in `git diff --name-only HEAD~1`; do
+  $SCRIPT_DIR/reorder_references_in_buildfiles.py $f
+done
+git commit -am "move_services_in_chromium.sh: Reorder references in buildfiles"
 #echo "Redoing Mojo pull as a check against inserting Mojo-side changes"
 #~/mojo/src/mojo/tools/roll/rev_sdk.py $CHROMIUM_SRC_DIR
+
+echo "Restoring //third_party/mojo_services/src to a pristine state"
+git checkout $commit_after_code_move -- third_party/mojo_services/src
+git commit -am "move_services_in_chromium.sh: Restore Mojo services code to pristine state"
