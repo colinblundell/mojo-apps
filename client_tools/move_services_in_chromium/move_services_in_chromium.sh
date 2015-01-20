@@ -30,6 +30,9 @@ echo "Applying add_license"
 git apply $SCRIPT_DIR/add_license.patch
 git add third_party/mojo_services/LICENSE
 git add third_party/mojo_services/README.chromium
+echo "Applying make_owners_files_changes"
+git apply $SCRIPT_DIR/make_owners_files_changes.patch
+git add third_party/mojo_services/OWNERS
 
 git commit -am "move_services_in_chromium.sh: Functional changes" > /dev/null
 
@@ -38,7 +41,7 @@ echo "Sorting headers"
 git commit -am "move_services_in_chromium.sh: Sort headers" > /dev/null
 
 echo "Reordering references in buildfiles"
-for f in `git diff --name-only HEAD~1`; do
+for f in `git diff --name-only HEAD~2`; do
   $SCRIPT_DIR/reorder_references_in_buildfiles.py $f
 done
 git commit -am "move_services_in_chromium.sh: Reorder references in buildfiles"

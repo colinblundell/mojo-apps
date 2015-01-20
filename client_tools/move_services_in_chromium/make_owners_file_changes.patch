@@ -1,0 +1,23 @@
+diff --git a/mojo/OWNERS b/mojo/OWNERS
+index cd7230f..831681d 100644
+--- a/mojo/OWNERS
++++ b/mojo/OWNERS
+@@ -1,6 +1,2 @@
+-# This subdirectory is being canonically developed in the mojo repository,
+-# please land changes there or they will be blown away by the next sync.
+-# See https://groups.google.com/a/chromium.org/d/msg/chromium-dev/nAwEbgCrUio/73AA2fnfcpEJ
+-# for more details.
+ ben@chromium.org
+ jamesr@chromium.org
+diff --git a/third_party/mojo_services/OWNERS b/third_party/mojo_services/OWNERS
+new file mode 100644
+index 0000000..3b3e7c0
+--- /dev/null
++++ b/third_party/mojo_services/OWNERS
+@@ -0,0 +1,6 @@
++# The code in src/ is being canonically developed in the mojo repository;
++# please land changes there or they will be blown away by the next sync.
++# See https://groups.google.com/a/chromium.org/d/msg/chromium-dev/nAwEbgCrUio/73AA2fnfcpEJ
++# for more details.
++ben@chromium.org
++jamesr@chromium.org
