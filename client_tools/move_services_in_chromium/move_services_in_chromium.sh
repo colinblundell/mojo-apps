@@ -21,6 +21,9 @@ git mv mojo/services/network/public third_party/mojo_services/src/network/public
 # TODO(blundell): Create patch that adds README.chromium and LICENSE and apply
 # it here.
 
+echo "Applying fix_checkdeps"
+git apply fix_checkdeps.patch
+
 echo "Committing changes"
 git commit -am "Changes from move_services_in_chromium.sh" > /dev/null
 
