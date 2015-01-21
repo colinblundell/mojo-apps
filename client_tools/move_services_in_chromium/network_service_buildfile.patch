@@ -25,13 +25,3 @@ index 2a13242..0bc61dd 100644
    sources = [
      "udp_socket_wrapper.cc",
      "udp_socket_wrapper.h",
-diff --git a/third_party/mojo_services/src/network_service_root.gni b/third_party/mojo_services/src/network_service_root.gni
-index b0b8745..05c9a5d 100644
---- a/third_party/mojo_services/src/network_service_root.gni
-+++ b/third_party/mojo_services/src/network_service_root.gni
-@@ -1,4 +1,4 @@
--# Copyright 2014 The Chromium Authors. All rights reserved.
-+# Copyright 2015 The Chromium Authors. All rights reserved.
- # Use of this source code is governed by a BSD-style license that can be
- # found in the LICENSE file.
- 
