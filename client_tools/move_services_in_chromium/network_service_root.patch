@@ -1,0 +1,13 @@
+diff --git a/third_party/mojo_services/src/network_service_root.gni b/third_party/mojo_services/src/network_service_root.gni
+new file mode 100644
+index 0000000..05c9a5d
+--- /dev/null
++++ b/third_party/mojo_services/src/network_service_root.gni
+@@ -0,0 +1,7 @@
++# Copyright 2015 The Chromium Authors. All rights reserved.
++# Use of this source code is governed by a BSD-style license that can be
++# found in the LICENSE file.
++
++# This variable should point to the parent directory of the network service's
++# client-side code.
++network_service_root = "//mojo/services"

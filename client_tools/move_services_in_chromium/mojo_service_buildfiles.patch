@@ -1,0 +1,55 @@
+diff --git a/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn b/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn
+index cb38d83..b373054 100644
+--- a/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn
++++ b/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn
+@@ -3,6 +3,7 @@
+ # found in the LICENSE file.
+ 
+ import("../../../mojo_sdk_root.gni")
++import("../../../network_service_root.gni")
+ import("$mojo_sdk_root/mojo/public/tools/bindings/mojom.gni")
+ 
+ mojom("interfaces") {
+@@ -10,10 +11,13 @@ mojom("interfaces") {
+     "content_handler.mojom",
+   ]
+ 
+-  import_dirs = [ get_path_info("../../../", "abspath") ]
++  import_dirs = [
++    get_path_info("../../../", "abspath"),
++    network_service_root,
++  ]
+ 
+   deps = [
+-    "../../../network/public/interfaces",
++    "$network_service_root/network/public/interfaces",
+   ]
+ 
+   mojo_sdk_deps = [ "mojo/public/interfaces/application" ]
+diff --git a/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn b/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn
+index 9b396e7..ffcf78f 100644
+--- a/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn
++++ b/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn
+@@ -3,6 +3,7 @@
+ # found in the LICENSE file.
+ 
+ import("../../../mojo_sdk_root.gni")
++import("../../../network_service_root.gni")
+ import("$mojo_sdk_root/mojo/public/tools/bindings/mojom.gni")
+ 
+ mojom("interfaces") {
+@@ -10,9 +11,12 @@ mojom("interfaces") {
+     "navigation.mojom",
+   ]
+ 
+-  import_dirs = [ get_path_info("../../../", "abspath") ]
++  import_dirs = [
++    get_path_info("../../../", "abspath"),
++    network_service_root,
++  ]
+ 
+   deps = [
+-    "../../../network/public/interfaces",
++    "$network_service_root/network/public/interfaces",
+   ]
+ }

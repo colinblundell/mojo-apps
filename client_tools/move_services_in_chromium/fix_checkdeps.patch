@@ -54,14 +54,3 @@ index 37deb33..ff597cc 100644
    "+third_party/WebKit/public",
    "+third_party/skia/include",
    "+ui/base",
-diff --git a/mojo/services/network/DEPS b/mojo/services/network/DEPS
-index cb237df..f6ea211 100644
---- a/mojo/services/network/DEPS
-+++ b/mojo/services/network/DEPS
-@@ -1,5 +1,5 @@
- include_rules = [
-   "+mojo/application",
--  "+mojo/services",
-   "+net",
-+  "+third_party/mojo_services/src",
- ]

@@ -1,0 +1,64 @@
+diff --git a/third_party/mojo_services/mojo_services_public.gyp b/third_party/mojo_services/mojo_services_public.gyp
+index 6359897..ea1529e 100644
+--- a/third_party/mojo_services/mojo_services_public.gyp
++++ b/third_party/mojo_services/mojo_services_public.gyp
+@@ -141,7 +141,11 @@
+       'target_name': 'mojo_navigation_bindings',
+       'type': 'static_library',
+       'variables': {
+-        'mojom_import_args': [ '-I<(mojo_sdk_root)', '-Isrc' ],
++         'mojom_import_args': [
++           '-I<(mojo_sdk_root)',
++           '-Isrc',
++           '-I../../mojo/services'
++         ],
+       },
+       'sources': [
+         'src/navigation/public/interfaces/navigation.mojom',
+@@ -160,7 +164,11 @@
+       'target_name': 'mojo_content_handler_bindings',
+       'type': 'static_library',
+       'variables': {
+-        'mojom_import_args': [ '-I<(mojo_sdk_root)', '-Isrc' ],
++         'mojom_import_args': [
++           '-I<(mojo_sdk_root)',
++           '-Isrc',
++           '-I../../mojo/services'
++         ],
+       },
+       'sources': [
+         'src/content_handler/public/interfaces/content_handler.mojom',
+@@ -180,19 +188,22 @@
+       'target_name': 'mojo_network_bindings',
+       'type': 'static_library',
+        'variables' : {
+-         'mojom_import_args': [ '-I<(mojo_sdk_root)', '-Isrc' ],
++         'mojom_import_args': [
++           '-I<(mojo_sdk_root)',
++           '-I../../mojo/services'
++         ],
+        },
+        'sources': [
+-        'src/network/public/interfaces/cookie_store.mojom',
+-        'src/network/public/interfaces/net_address.mojom',
+-        'src/network/public/interfaces/network_error.mojom',
+-        'src/network/public/interfaces/network_service.mojom',
+-        'src/network/public/interfaces/tcp_bound_socket.mojom',
+-        'src/network/public/interfaces/tcp_connected_socket.mojom',
+-        'src/network/public/interfaces/tcp_server_socket.mojom',
+-        'src/network/public/interfaces/udp_socket.mojom',
+-        'src/network/public/interfaces/url_loader.mojom',
+-        'src/network/public/interfaces/web_socket.mojom',
++        '../../mojo/services/network/public/interfaces/cookie_store.mojom',
++        '../../mojo/services/network/public/interfaces/net_address.mojom',
++        '../../mojo/services/network/public/interfaces/network_error.mojom',
++        '../../mojo/services/network/public/interfaces/network_service.mojom',
++        '../../mojo/services/network/public/interfaces/tcp_bound_socket.mojom',
++        '../../mojo/services/network/public/interfaces/tcp_connected_socket.mojom',
++        '../../mojo/services/network/public/interfaces/tcp_server_socket.mojom',
++        '../../mojo/services/network/public/interfaces/udp_socket.mojom',
++        '../../mojo/services/network/public/interfaces/url_loader.mojom',
++        '../../mojo/services/network/public/interfaces/web_socket.mojom',
+       ],
+       'includes': [ '../mojo/mojom_bindings_generator.gypi' ],
+       'export_dependent_settings': [

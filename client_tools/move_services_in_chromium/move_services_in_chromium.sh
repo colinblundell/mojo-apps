@@ -5,7 +5,10 @@ cd ~/chromium/src
 echo "Moving code from Mojo public services to live under //third_party/mojo_services"
 rm -rf third_party/mojo/services
 mkdir -p third_party/mojo_services/src
-git mv mojo/services/mojo_sdk_root.gni third_party/mojo_services/src
+# NOTE: mojo_sdk_root.gni has to be prenent in //mojo/services/mojo_sdk_root.gni
+# for the network service's public BUILD.gn file to work.
+cp mojo/services/mojo_sdk_root.gni third_party/mojo_services/src
+git add third_party/mojo_services/src/mojo_sdk_root.gni
 git mv mojo/mojo_services_public.gyp third_party/mojo_services
 git mv mojo/services/public third_party/mojo_services/src/public
 for d in accessibility clipboard content_handler geometry gpu input_events native_viewport navigation surfaces view_manager window_manager; do
@@ -13,17 +16,15 @@ for d in accessibility clipboard content_handler geometry gpu input_events nativ
 done
 # Note: The network service has an impl that belongs in Chromium and thus should
 # stay where it is.
-mkdir third_party/mojo_services/src/network
-git mv mojo/services/network/public third_party/mojo_services/src/network/public
+#mkdir third_party/mojo_services/src/network
+#git mv mojo/services/network/public third_party/mojo_services/src/network/public
 
 git commit -am "move_services_in_chromium.sh: Move Mojo services code"
 commit_after_code_move=`git rev-parse HEAD`
 
 ./tools/git/mffr.py -fi $SCRIPT_DIR/search_and_replace_changes.py
 
-# TODO(blundell): Create patch that adds README.chromium and LICENSE and apply
-# it here.
-
+# These patches are all part of this CL.
 echo "Applying fix_checkdeps"
 git apply $SCRIPT_DIR/fix_checkdeps.patch
 echo "Applying add_license"
@@ -33,6 +34,24 @@ git add third_party/mojo_services/README.chromium
 echo "Applying make_owners_file_changes"
 git apply $SCRIPT_DIR/make_owners_file_changes.patch
 git add third_party/mojo_services/OWNERS
+echo "Applying mojo_services_public_network"
+git apply $SCRIPT_DIR/mojo_services_public_network.patch
+
+# This patch should be replaced by having this script move
+# network_service_root.gni to //third_party/mojo_services/src once
+# the gni file exists on origin/master in Chromium.
+echo "Applying network_service_root"
+git apply $SCRIPT_DIR/network_service_root.patch
+
+# These patches are separate Chromium CLs that can be removed once
+# they land in Chromium.
+echo "Applying network_service_buildfile"
+git apply $SCRIPT_DIR/network_service_buildfile.patch
+
+# These patches are Mojo-side CLs that need to land and roll into
+# Chromium and then can be removed here.
+echo "Applying mojo_service_buildfiles"
+git apply $SCRIPT_DIR/mojo_service_buildfiles.patch
 
 git commit -am "move_services_in_chromium.sh: Functional changes" > /dev/null
 
