@@ -1,0 +1,12 @@
+diff --git a/mojo/services/html_viewer/DEPS b/mojo/services/html_viewer/DEPS
+index ff597cc..8f4c26a 100644
+--- a/mojo/services/html_viewer/DEPS
++++ b/mojo/services/html_viewer/DEPS
+@@ -6,6 +6,7 @@ include_rules = [
+   "+mojo/cc",
+   "+mojo/converters/surfaces",
+   "+mojo/application",
++  "+mojo/services/network",
+   "+net/base",
+   "+skia",
+   "+third_party/mojo_services/src",

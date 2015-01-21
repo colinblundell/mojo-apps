@@ -27,6 +27,8 @@ commit_after_code_move=`git rev-parse HEAD`
 # These patches are all part of this CL.
 echo "Applying fix_checkdeps"
 git apply $SCRIPT_DIR/fix_checkdeps.patch
+echo "Applying fix_checkdeps_2"
+git apply $SCRIPT_DIR/fix_checkdeps_2.patch
 echo "Applying add_license"
 git apply $SCRIPT_DIR/add_license.patch
 git add third_party/mojo_services/LICENSE
