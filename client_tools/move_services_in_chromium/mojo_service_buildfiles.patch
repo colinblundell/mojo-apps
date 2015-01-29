@@ -1,55 +1,62 @@
 diff --git a/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn b/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn
-index cb38d83..b373054 100644
+index cb38d83..5676a98 100644
 --- a/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn
 +++ b/third_party/mojo_services/src/content_handler/public/interfaces/BUILD.gn
-@@ -3,6 +3,7 @@
- # found in the LICENSE file.
- 
- import("../../../mojo_sdk_root.gni")
-+import("../../../network_service_root.gni")
- import("$mojo_sdk_root/mojo/public/tools/bindings/mojom.gni")
- 
- mojom("interfaces") {
-@@ -10,10 +11,13 @@ mojom("interfaces") {
+@@ -10,11 +10,18 @@ mojom("interfaces") {
      "content_handler.mojom",
    ]
  
 -  import_dirs = [ get_path_info("../../../", "abspath") ]
+-
+-  deps = [
+-    "../../../network/public/interfaces",
 +  import_dirs = [
 +    get_path_info("../../../", "abspath"),
-+    network_service_root,
-+  ]
- 
-   deps = [
--    "../../../network/public/interfaces",
-+    "$network_service_root/network/public/interfaces",
    ]
  
++  if (defined(in_chromium) && in_chromium) {
++    assert(defined(network_service_root))
++    import_dirs += [ network_service_root ]
++  } else {
++    network_service_root = "../../.."
++  }
++
++  deps = [ "$network_service_root/network/public/interfaces" ]
++
    mojo_sdk_deps = [ "mojo/public/interfaces/application" ]
+ }
+diff --git a/third_party/mojo_services/src/mojo_sdk_root.gni b/third_party/mojo_services/src/mojo_sdk_root.gni
+index c405ca1..f71be25 100644
+--- a/third_party/mojo_services/src/mojo_sdk_root.gni
++++ b/third_party/mojo_services/src/mojo_sdk_root.gni
+@@ -4,3 +4,5 @@
+ 
+ # This variable should point to the parent directory of the Mojo SDK.
+ mojo_sdk_root = "//third_party/mojo/src"
++in_chromium = true
++network_service_root = "//mojo/services"
 diff --git a/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn b/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn
-index 9b396e7..ffcf78f 100644
+index 9b396e7..c13358e 100644
 --- a/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn
 +++ b/third_party/mojo_services/src/navigation/public/interfaces/BUILD.gn
-@@ -3,6 +3,7 @@
- # found in the LICENSE file.
- 
- import("../../../mojo_sdk_root.gni")
-+import("../../../network_service_root.gni")
- import("$mojo_sdk_root/mojo/public/tools/bindings/mojom.gni")
- 
- mojom("interfaces") {
-@@ -10,9 +11,12 @@ mojom("interfaces") {
+@@ -10,9 +10,16 @@ mojom("interfaces") {
      "navigation.mojom",
    ]
  
 -  import_dirs = [ get_path_info("../../../", "abspath") ]
+-
+-  deps = [
+-    "../../../network/public/interfaces",
 +  import_dirs = [
 +    get_path_info("../../../", "abspath"),
-+    network_service_root,
-+  ]
- 
-   deps = [
--    "../../../network/public/interfaces",
-+    "$network_service_root/network/public/interfaces",
    ]
++
++  if (defined(in_chromium) && in_chromium) {
++    assert(defined(network_service_root))
++    import_dirs += [ network_service_root ]
++  } else {
++    network_service_root = "../../.."
++  }
++
++  deps = [ "$network_service_root/network/public/interfaces" ]
  }

@@ -1,27 +1,37 @@
+diff --git a/mojo/services/mojo_sdk_root.gni b/mojo/services/mojo_sdk_root.gni
+index 1d31dcc..a84da48 100644
+--- a/mojo/services/mojo_sdk_root.gni
++++ b/mojo/services/mojo_sdk_root.gni
+@@ -4,3 +4,4 @@
+ 
+ # This variable should point to the parent directory of the Mojo SDK.
+ mojo_sdk_root = "//third_party/mojo/src"
++in_chromium = true
 diff --git a/mojo/services/network/public/cpp/BUILD.gn b/mojo/services/network/public/cpp/BUILD.gn
-index 2a13242..0bc61dd 100644
+index 2a13242..ebbbb6b 100644
 --- a/mojo/services/network/public/cpp/BUILD.gn
 +++ b/mojo/services/network/public/cpp/BUILD.gn
-@@ -5,9 +5,20 @@
+@@ -5,9 +5,22 @@
  import("../../../mojo_sdk_root.gni")
  import("$mojo_sdk_root/mojo/public/mojo_sdk.gni")
  
--mojo_sdk_source_set("cpp") {
-+# The absolute path to the directory containing the network service.
-+network_service_root = get_path_info("../../..", "abspath")
-+config("network_service") {
-+  include_dirs = [
-+    # Include paths in the network service's client-side code are specified
-+    # relative to the directory holding the service's client-side code.
-+    network_service_root,
++if (defined(in_chromium) && in_chromium) {
++  config("chromium_network_service_config") {
++    include_dirs = [
++      "//mojo/services",
++      root_gen_dir + "//mojo/services",
++    ]
++  }
++}
 +
-+    # The same goes for files generated from mojoms.
-+    root_gen_dir + network_service_root,
-+  ]
-+}mojo_sdk_source_set("cpp") {
+ mojo_sdk_source_set("cpp") {
    restrict_external_deps = false
 -  public_configs = [ "../../../public/build/config:mojo_services" ]
-+  public_configs = [ ":network_service" ]
++  if (defined(in_chromium) && in_chromium) {
++    public_configs = [ ":chromium_network_service_config" ]
++  } else {
++    public_configs = [ "../../../public/build/config:mojo_services" ]
++  }
    sources = [
      "udp_socket_wrapper.cc",
      "udp_socket_wrapper.h",
