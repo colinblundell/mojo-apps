@@ -34,6 +34,8 @@ git add third_party/mojo_services/OWNERS
 echo "Applying mojo_services_public_config"
 git apply $SCRIPT_DIR/mojo_services_public_config.patch
 git add mojo/services/public/build/config/BUILD.gn
+echo "Applying network_service_root"
+git apply $SCRIPT_DIR/network_service_root.patch
 
 git commit -am "move_services_in_chromium.sh: Functional changes" > /dev/null
 
@@ -50,11 +52,3 @@ git commit -am "move_services_in_chromium.sh: Reorder references in buildfiles" 
 echo "Restoring //third_party/mojo_services/src to a pristine state"
 git checkout $commit_after_code_move -- third_party/mojo_services/src
 git commit -am "move_services_in_chromium.sh: Restore Mojo services code to pristine state" > /dev/null
-
-echo "Adding Mojo-side patches that need to be rolled into Chromium before this CL can land"
-
-# These patches are Mojo-side CLs that need to land and roll into
-# Chromium and be removed here before this CL can land.
-echo "Applying mojo_service_buildfiles"
-git apply $SCRIPT_DIR/mojo_service_buildfiles.patch
-git commit -am "Mojo-side changes that need to be rolled in to Chromium" > /dev/null
